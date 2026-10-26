@@ -1,0 +1,40 @@
+# SPEC-010 — Issues — Acceptance Criteria
+
+**Status:** Draft — critérios domain-specific; thresholds de contrato pendentes
+
+## AC-010-01 — consulta autorizada
+
+**Given** ator com membership ativa, scope `Project` e permission de view  
+**When** consulta Issue  
+**Then** recebe somente registros e campos autorizados do Tenant.
+
+## AC-010-02 — operação principal
+
+**Given** Issue válido e ator com grant necessário  
+**When** executa `createIssue` com payload válido  
+**Then** domínio persiste a transição permitida e registra actor/version/audit.
+
+## AC-010-03 — regra central
+
+**Given** dados que satisfazem regras do domínio  
+**When** fluxo é concluído  
+**Then** Issue representa problema ocorrido; priority segue `low|medium|high|critical`, blocker é explícito e aging deriva de datas.
+
+## AC-010-04 — negação e isolamento
+
+**Given** scope/Tenant incorreto, membership revogada ou grant ausente  
+**When** ator usa ID direto ou payload forjado  
+**Then** servidor nega sem alterar dados nem revelar existência cross-tenant.
+
+## AC-010-05 — versão concorrente
+
+**Given** registro mudou desde `expected_version`  
+**When** update obsoleto é enviado  
+**Then** retorna conflict e mantém ambas as versões sem perda silenciosa.
+
+
+## AC-010-06 — invariante de domínio
+
+**Given** ator autorizado e dados válidos no scope do módulo  
+**When** executa o comando de domínio aplicável  
+**Then** Issue representa problema ocorrido; priority segue `low|medium|high|critical`, blocker é explícito e aging deriva de datas.
