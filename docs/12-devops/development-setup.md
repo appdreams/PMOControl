@@ -45,7 +45,7 @@ O cadastro público está desabilitado para respeitar o modelo de acesso por con
 
 ## Integrações e deploy
 
-O workflow `.github/workflows/ci.yml` roda lint, verificação TypeScript e build nas alterações da aplicação. Ele não aplica migrations nem faz deploy. Para ativá-lo, o projeto precisa estar em um repositório GitHub com Actions habilitado.
+O workflow `.github/workflows/ci.yml` roda lint, verificação TypeScript e build nas alterações da aplicação. A primeira execução no repositório conectado passou no commit `efd6d159`. O workflow não aplica migrations nem faz deploy.
 
 Vercel, Supabase hospedado, Inngest e SMTP precisam ser provisionados pela equipe responsável. Adicione as variáveis de cada ambiente no gerenciador de segredos do serviço; não as inclua no Git. Inngest e SMTP entram quando os respectivos fluxos forem implementados.
 

@@ -33,6 +33,7 @@ Formato inspirado em Keep a Changelog, adaptado ao projeto.
 - Definidos valores padrão iniciais por Tenant para tipos/criticidade de marcos, categorias/tendências de riscos e origem de ações; Specs 007/009/011, seed de referência, contrato de importação, guia leigo e validações das planilhas alinhados.
 - Criada a fundação da aplicação em `apps/web` com Next.js + TypeScript, layout inicial em pt-BR, health endpoint, regras de organização modular, exemplo de ambiente e workflow de CI. Nenhum módulo de negócio ou schema de banco foi iniciado.
 - Preparação para desenvolvimento local: workflow GitHub Actions de lint/typecheck/build, Supabase local versionado, Node.js fixado, `.gitignore` raiz e guia de provisionamento; primeira migration e configuração de serviços hospedados permanecem portões da fatia Identity & Access.
+- CI remoto executado com sucesso após gerar os tipos do Next antes do typecheck; checklist e setup atualizados com o estado verificado.
 - Matriz RLS normalizada para listar individualmente cada uma das 60 tabelas canônicas; reconciliação estática encontrou correspondência 60/60, sem substituir execução de políticas.
 - Corrigida a nulabilidade de orçamento/forecast financeiro antes da baseline aprovada; índice de Issues alinhado a `priority` e nível de Risk à avaliação atual.
 - Endpoints das Specs agora distinguem payloads lógicos definidos do contrato OpenAPI compilável ainda pendente; checagem final de links locais passou (0 quebrados) e 29 pastas de Specs foram encontradas.

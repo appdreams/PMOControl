@@ -9,7 +9,7 @@ evidência no repositório.
 ## 1. Foundation
 
 -   [x] Next.js + TypeScript bootstrap (`apps/web`; lint, TypeScript e build Webpack aprovados; Turbopack local esbarra na restrição de iniciar processo auxiliar)
--   [x] Workflow GitHub Actions configurado para lint, typecheck e build; execução hospedada pendente de conectar o repositório ao GitHub.
+-   [x] Workflow GitHub Actions: lint, typecheck e build passaram no GitHub Actions para o commit `efd6d159`.
 -   [x] Configuração Supabase local versionada; CLI e Docker Desktop são pré-requisitos na máquina de cada desenvolvedor.
 -   [ ] Vercel environments
 -   [ ] Supabase project/database/auth/storage
