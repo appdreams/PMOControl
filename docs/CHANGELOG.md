@@ -130,3 +130,5 @@ precisam de entrada individual.
 - Mutações de Portfolio/Project agora registram falhas RPC não classificadas com SQLSTATE validado, além de respostas de dependência inválidas ou fora do escopo.
 
 - Todas as respostas HTTP 5xx passaram a gerar log JSON correlacionado; duplicatas por requisição são suprimidas. Build de produção e 69 testes passaram, além de lint e typecheck.
+
+- Publicado o commit `9697590` em `main`; a execução GitHub Actions `40594741068` passou em todos os jobs, incluindo o smoke remoto de RLS no Supabase DEV.
