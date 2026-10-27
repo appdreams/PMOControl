@@ -43,7 +43,7 @@ O fluxo não usa Docker. F0-07 e gates adicionais de segurança seguem em andame
 
 1. `[x] F1-05` Suspensão/reativação de membership com `membership.manage`, reason/version, deny, grants preservados e audit atômico; migration `20261027155632_manage_tenant_membership_lifecycle.sql` e UI aplicadas. Smokes DEV (todos em transações revertidas) validaram sucesso, versões, audit, falta de permissão, versão obsoleta, auto-transição e proteção do último Tenant Admin; ACL/`search_path` e ausência de fixtures conferidos.
 2. `[~] F1-03/F1-10` CRUD protegido, associação temporal e troca de gerente de Portfolio/Project implementados no workspace com smoke transacional. A validação real diagnosticou atribuição ao gerente atual e conflitos de versão; migration `20261027203631` e refresh de conflito corrigem esse comportamento. Permanecem policies de negócio e a validação de transferência real; falta outra membership ativa no Tenant.
-3. `[x] F0-08/F1-13` CI de migrations/RLS e fixtures no projeto hospedado DEV; execução Actions `40594741068` aprovada, sem Docker. Convite scoped real, Projeto e grant de Project foram validados; a troca pela UI requer um terceiro membro ativo como ator ou uma alteração aprovada no modelo de permissões.
+3. `[x] F0-08` CI de migrations/RLS e fixtures no projeto hospedado DEV; execução Actions `40594741068` aprovada, sem Docker. F1-13 permanece parcial até ampliar testes de autorização por rota/entidade.
 
 ## 3. Fases e entregas
 
