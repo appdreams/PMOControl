@@ -11,14 +11,14 @@ pnpm install
 pnpm dev
 ```
 
-O servidor abre em `http://localhost:3000`. Copie `.env.example` para `.env.local`; consulte [`docs/12-devops/development-setup.md`](../../docs/12-devops/development-setup.md) para iniciar o Supabase local. Nunca coloque credenciais privadas em variáveis `NEXT_PUBLIC_*`.
+O servidor abre em `http://localhost:3000`. Copie `.env.example` para `.env.local`; configure `APP_ORIGIN` somente quando usar outra origem local. Em produção, `APP_ORIGIN` é obrigatório para validar requests autenticadas por cookie. Consulte [`docs/12-devops/development-setup.md`](../../docs/12-devops/development-setup.md) para configurar o projeto Supabase hospedado de desenvolvimento. O app Next roda localmente sem Docker. Nunca coloque credenciais privadas em variáveis `NEXT_PUBLIC_*`.
 
 ## Comandos
 
 - `pnpm dev` — servidor local.
 - `pnpm lint` — análise estática.
 - `pnpm typecheck` — verificação de tipos TypeScript.
-- `pnpm build` — compilação para produção.
+- `pnpm build` — compilação para produção com Webpack; o servidor de desenvolvimento usa Turbopack.
 - `pnpm start` — servir a compilação.
 
 ## Arquitetura

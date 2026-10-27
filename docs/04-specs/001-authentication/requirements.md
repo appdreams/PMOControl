@@ -37,6 +37,9 @@ nenhum Tenant, Portfolio ou Project.
   ou proibido, conforme política da API).
 - **FR-001-10:** registrar eventos de autenticação e mudanças de acesso
   sem registrar senha, token, recovery link ou secret.
+- **FR-001-11:** criar um perfil não secreto para cada identidade Auth e
+  permitir que o próprio usuário informe/atualize o nome exibido na
+  organização; rótulos temporários não podem ser usados como autoridade.
 
 ## Requisitos não funcionais
 

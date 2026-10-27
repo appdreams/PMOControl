@@ -17,3 +17,8 @@
 Release gate: any cross-tenant access, privilege escalation, field-policy bypass or stale grant acceptance blocks release.
 - **TC-003-12:** somente Platform Root Admin com `platform.projects.purge` consulta metadados mínimos e executa o fluxo confirmado; Platform Admin comum e Tenant roles recebem deny sem enumeração.
 - **TC-003-13:** tentativa de Tenant Admin/PMO Admin conceder ou delegar entitlement root é negada e auditada sem autoelevação.
+- **TC-003-14:** allow ancestral só percorre arestas declaradas; deny ancestral/aplicável vence; siblings/descendentes não bloqueiam e ancestry malformada nega.
+
+## Implementação parcial — 2026-10-26
+
+Testes executáveis de domínio em `apps/web/tests/authorization.test.mjs` via `pnpm test` (32 passando em 2026-10-26). Cobrem escopo exato, contexto ausente/inválido, entradas runtime malformadas, negação explícita, revogação/expiração e separação de permissões. [Limites e pendências](../../07-security/identity-foundation-review.md). TC-003-01/05/07/08/10/11/12/13 não estão integralmente implementados; testes de domínio não substituem API/RLS.

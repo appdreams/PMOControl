@@ -19,7 +19,7 @@ Este documento deve ser preenchido com os comandos reais assim que
 -   e2e;
 -   migrations;
 -   seed;
--   local Supabase;
+-   Supabase hospedado de desenvolvimento (CLI/psql);
 -   CI verification.
 
 ## Regra

@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Lets local dev instances avoid colliding with a stale or concurrently held .next lock.
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
   turbopack: {
     rules: {
       "*.css": {

@@ -4,7 +4,7 @@
 
 ## Provision
 
-Platform operator authenticates → requests tenant create with slug/name and initial administrator → server validates platform permission, unique slug and capacity → creates Tenant + first Membership atomically → audit `TenantCreated` → sends invitation. Client users cannot provision tenants.
+Platform operator authenticates → provisions Tenant → its creator with current platform grant enters the first administrator email and reason → server issues and audits a one-time, seven-day `tenant_admin` link → operator shares the link manually → invitee signs in with matching confirmed Auth email → server atomically consumes invite, activates membership, assigns role and audits `MembershipGranted`. The app does not send email. Client users cannot provision Tenants.
 
 ## Invite and join
 

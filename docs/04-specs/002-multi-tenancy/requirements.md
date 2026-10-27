@@ -4,7 +4,7 @@
 
 Tenant é fronteira de autorização aplicada em servidor e banco; `tenant_id` do cliente não prova acesso. Recursos de negócio pertencem a um Tenant, salvo catálogos globais declarados.
 
-- **FR-002-01:** somente equipe da plataforma cria tenants; criação deve incluir slug único, estado inicial e primeiro administrador/membership de forma consistente.
+- **FR-002-01:** somente equipe da plataforma cria tenants; o sistema deriva automaticamente o slug do nome da organização, exige unicidade, estado inicial e provisiona o primeiro administrador/membership de forma consistente.
 - **FR-002-02:** somente equipe da plataforma pode suspender/reativar ou iniciar encerramento de tenant; operações exigem ator e motivo auditados.
 - **FR-002-03:** usuário pode ter membership em vários tenants e escolhe uma membership ativa após login; o servidor valida membership em toda operação e descarta contexto anterior na troca.
 - **FR-002-04:** convite vincula e-mail, Tenant e grants propostos; é single-use, expira em 7 dias, pode ser revogado e não autoaprova grants além dos permitidos ao convidante.
@@ -21,7 +21,7 @@ Falha ao resolver tenant/membership resulta em deny. RLS é defesa adicional. Re
 
 ## Acceptance/test traceability
 
-- `FR-002-01` → `AC-002-01/02` → `TC-002-01/02/03` (provisionamento, negação e slug único).
+- `FR-002-01` → `AC-002-01/02/13` → `TC-002-01/02/03/17` (provisionamento, negação, normalização e unicidade automática do slug).
 - `FR-002-02` e `FR-002-09` → `AC-002-02/06` → `TC-002-02/08` (lifecycle, suspensão e reativação).
 - `FR-002-03` → `AC-002-03` → `TC-002-04` (seleção e validação da membership ativa).
 - `FR-002-04` → `AC-002-04` → `TC-002-05` (single-use, expiração, revogação e identidade alvo).

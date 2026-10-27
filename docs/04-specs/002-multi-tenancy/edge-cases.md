@@ -18,3 +18,4 @@
 14. Transferência de administrador com solicitação revogada, novo e-mail não verificado, alteração concorrente ou tentativa de autopromoção.
 15. Tenant sem administrador ativo: recuperação por JIT exige ticket, aprovação independente, scope mínimo, expiração e trilha de auditoria.
 16. Contestação de export fora da janela de 30 dias, com escopo parcial, duplicada ou protocolada durante purge; somente o escopo válido deve ser pausado.
+17. Different organization names normalize to the same slug, a name exceeds the slug length, or a Unicode-only name produces no valid ASCII identifier.

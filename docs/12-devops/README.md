@@ -7,7 +7,8 @@
 
 Definir práticas de entrega, ambientes, CI/CD, configuração,
 observabilidade, migrations, backups, rollback e operação do PMO
-Control.
+Control. Desenvolvimento de banco usa Supabase hospedado; Docker não é
+requisito deste repositório.
 
 ## Stack MVP
 
@@ -31,4 +32,4 @@ Control.
 
 ## Ambiente de desenvolvimento
 
-O bootstrap, os comandos locais, o uso do Supabase local, o workflow de qualidade e os pré-requisitos para conectar serviços externos estão em [`development-setup.md`](development-setup.md). Credenciais hospedadas não são necessárias para iniciar UI e domínio local; autenticação/persistência aguardam a migration inicial de Identity & Access, suas policies RLS e testes de isolamento.
+O bootstrap, os comandos locais, o projeto Supabase hospedado de desenvolvimento, o workflow de qualidade e os pré-requisitos para conectar serviços externos estão em [`development-setup.md`](development-setup.md). Credenciais hospedadas não são necessárias para iniciar UI e domínio local; autenticação/persistência aguardam a migration inicial de Identity & Access, suas policies RLS e testes de isolamento.

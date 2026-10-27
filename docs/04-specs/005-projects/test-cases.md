@@ -1,6 +1,6 @@
 # SPEC-005 — Projects — Test Cases
 
-**Status:** Draft — testes de domínio e integração propostos
+**Status:** Partial — criação/listagem/update/archive/associação e troca de gerente cobertas por smoke transacional DEV; assignments de membros pendentes
 
 - **TC-005-01:** Happy path de `createProject` com campos mínimos válidos e Tenant/scope corretos.
 - **TC-005-02:** Cada operação relevante (createProject, updateProject, changeBaseline, assignMember, archiveProject) verifica persistência e evento/audit esperado.
@@ -19,3 +19,7 @@ Gates: tenant isolation, authorization, invariants e data integrity bloqueiam re
 - **TC-005-12:** Platform Admin comum, Tenant Admin e usuário sem grant falham em preview/confirm/status cross-tenant sem enumeração.
 - **TC-005-13:** purge apaga registros operacionais elegíveis, preserva snapshots/publicações/audit/holds vigentes e cria tombstone mínimo; validar referências e contagens do resultado.
 - **TC-005-14:** retry, concorrência, preview stale, retenção/hold e dependência externa são idempotentes/seguros e não executam cascade proibido.
+- **TC-005-15 (executado no DEV, rollback):** criação sob Portfolio same-Tenant autorizado materializa associação ativa, concede `project_manager` ao ator somente no Project e grava audit; replay idempotente e associação cross-Tenant falha.
+- **TC-005-16 (executado no DEV, rollback):** update autorizado com versão atual altera campos permitidos e audita; retry com mesma chave não duplica evento; versão stale é rejeitada; archive marca `archived_at`, preserva status de negócio e tira Project da lista ativa.
+- **TC-005-17 (executado no DEV, rollback):** remover o vínculo de um Project de um Portfolio não arquiva, apaga nem altera o Project; a remoção e posterior relink preservam as linhas históricas e grants do Project.
+- **TC-005-18 (executado no DEV, rollback):** transferência de gerente para outra membership ativa atualiza `project_manager_id`, concede `project_manager` ao alvo, revoga a concessão anterior e grava um evento audit; replay não duplica evento e versão stale falha sem escrita parcial.

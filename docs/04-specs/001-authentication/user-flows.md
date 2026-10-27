@@ -5,16 +5,16 @@
 ## Sign in
 
 ```text
-Enter email/password → Submit to Supabase Auth → Verify credential/session server-side
-→ Resolve active memberships → 0: show no-access/request path; 1: continue; >1: choose tenant
-→ Revalidate membership and create server-side request context → Open authorized workspace
+Enter email/password → browser Supabase Auth (`signInWithPassword`) → SSR verifies session
+→ Resolve active memberships → 0: show no-membership/platform provisioning path; 1: continue; >1: choose tenant
+→ `POST /api/v1/session/tenant` revalidates selection → Open workspace
 ```
 
 ## Password recovery
 
 ```text
-Request recovery → always return neutral confirmation → provider sends single-use expiring link
-→ validate token → set new password → revoke/rotate sessions per provider policy → audit security event
+Request recovery through Supabase Auth → always show neutral confirmation → provider sends single-use expiring link
+→ `/auth/callback` exchanges PKCE code into SSR session → set new password → end local session
 ```
 
 ## Tenant switch

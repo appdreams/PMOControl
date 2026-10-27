@@ -1,6 +1,18 @@
 # SPEC-005 — Projects — Database
 
-**Status:** Draft — modelo lógico e constraints necessários
+**Status:** Partial — schema e RPC/API de leitura/criação/edição/archive, associação temporal e troca do gerente aplicados no DEV e smoke-validated; assignments de membros pendentes
+
+## Estado implementado
+
+Migrations `20261027163212_portfolio_project_scope_foundation.sql` e `20261027163415_index_portfolio_project_foreign_keys.sql` criam `public.projects` e índices de suas FKs. A tabela não concede acesso direto via Data API: RLS está ativo, sem policies, e grants foram revogados de `PUBLIC`, `anon`, `authenticated` e `service_role`. As tabelas de baseline, forecast e assignments ainda não foram criadas.
+
+`20261027181701_portfolio_project_read_create.sql` adiciona RPCs para listar Projects de uma associação ativa de Portfolio e criar Project sob `project.create` exato no Portfolio. A criação também grava a associação `portfolio_projects`, atribui o ator como gerente e concede `project_manager` somente no Project novo; audit e gravação são atômicos/idempotentes. A rota/UI usa `/api/v1/tenants/{tenantId}/projects`.
+
+`20261027183256_update_archive_resources.sql` exige `project.edit` ou `project.archive` no Project exato, versão esperada, motivo e idempotency key; atualiza campos descritivos/priority e audit atomicamente. Archive define `archived_at` e incrementa a versão, sem substituir o status do workflow (`planning|execution|paused|completed|cancelled`). Lista só inclui Projects não arquivados e retorna capacidades de ação por grant.
+
+`20261027184547_manage_portfolio_project_associations.sql` permite associar o Projeto existente a outro Portfolio same-Tenant ou encerrar somente um vínculo. A operação não altera nem apaga o Project nem muda grants; a associação anterior fica no histórico temporal.
+
+`20261027191449_assign_project_manager.sql` implementa troca atômica do gerente em `project_manager_id`, papel de acesso e audit. Exige `project.assign` no Project exato, alvo com membership ativa no Tenant, versão esperada, motivo e idempotência; revoga concessões `project_manager` anteriores e cria/reusa a concessão do novo gerente. O endpoint de candidatos retorna apenas ID/nome mínimo de membros ativos, excluindo o gerente atual. A migration `20261027203631_prevent_noop_project_manager_assignment.sql` também rejeita atribuição do gerente atual, evitando incremento de versão e auditoria para uma operação sem mudança.
 
 ## Tabela lógica
 
@@ -8,9 +20,9 @@
 
 ## Constraints
 
-- `projects(id, tenant_id, name, code, sponsor_id, project_manager_id, status, priority, start_date, target_end_date, version, created_at, created_by, updated_at, updated_by)`; membership em portfólios é representada somente por `portfolio_projects` (o `portfolio_id` da API é input para criar essa associação). `project_baselines` guarda versões aprovadas (datas, scope, budget, version, approver/time); `project_forecasts` guarda previsões com `as_of`, fonte, ator e versão; `project_assignments` guarda sujeito/escopo/validade.
-- PK UUID e `UNIQUE(tenant_id,id)`; todas as tabelas-filhas têm FKs compostas para ownership same-tenant. `UNIQUE(tenant_id,code)` para código não vazio.
-- `CHECK(status IN ('planning','execution','paused','completed','cancelled'))` conforme PDD §49; arquivamento é `archived_at`, não um status substituto. `CHECK(priority IN ('low','medium','high','critical'))`; datas de término não antecedem início; versão ≥ 1.
+- Implementado em `projects`: `id, tenant_id, name, code, sponsor_id, project_manager_id, status, priority, scope_summary, start_date, target_end_date, archived_at, version, created_at, created_by, updated_at, updated_by`. Associação a Portfolio é somente via `portfolio_projects`; `portfolioId` é input lógico da API e materializa a associação na mesma transação de criação.
+- Aplicado: PK UUID, `UNIQUE(tenant_id,id)`, código opcional único/normalizado por Tenant, sponsor/manager membership same-Tenant, nome/escopo com limites, estados documentados incluindo `cancelled`, prioridades `low|medium|high|critical`, intervalo de datas e versão positiva.
+- Aplicados índices para listagem, manager, sponsor, código e lookups de FKs, inclusive atores de autoria. Tabelas de baseline, forecast e assignments ainda não existem.
 - Baselines aprovadas são append-only; baseline corrente é uma referência à versão aprovada. Forecast/actual não atualiza baseline. `UNIQUE(tenant_id,project_id,baseline_version)` e índices por `(tenant_id,portfolio_id,status)` e `(tenant_id,project_manager_id,status)`.
 
 ## RLS e transações

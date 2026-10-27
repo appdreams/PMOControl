@@ -4,7 +4,7 @@
 
 ## Conteúdo e ações
 
-Exibir `Project` dentro do scope `Tenant/Portfolio/Project`, campos prioritários `tenant_id, portfolio_id, name, code, sponsor_id, project_manager_id`, origem/status e timestamps relevantes. Ações conforme grant: createProject, updateProject, changeBaseline, assignMember, archiveProject. Exibir Current vs Published quando a fonte for snapshot.
+Exibir `Project` dentro do scope `Tenant/Portfolio/Project`, campos prioritários `tenant_id, portfolio_id, name, code, sponsor_id, project_manager_id`, origem/status e timestamps relevantes. Ações conforme grant: createProject, updateProject, changeBaseline, assignProjectManager, assignMember, archiveProject. A troca de gerente lista somente membros ativos, exige motivo e confirma o impacto no papel de acesso anterior e atual. Exibir Current vs Published quando a fonte for snapshot.
 
 ## Estados
 

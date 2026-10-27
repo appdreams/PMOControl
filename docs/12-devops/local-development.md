@@ -13,8 +13,8 @@ Usar `.env.local`/mecanismo equivalente não versionado.
 
 ## Fluxo
 
-Clone → Install → Configure env → Start local dependencies → Migrate →
-Seed reference data → Run app → Run tests.
+Clone → Install → Configure env → Link hosted dev project → Apply migrations →
+Run SQL checks through psql → Run app → Run tests.
 
 ## Regra
 
@@ -23,4 +23,4 @@ scripts forem estabilizados.
 
 ## Procedimento atual
 
-O passo a passo específico do bootstrap Next.js/Supabase local está em [`development-setup.md`](development-setup.md); esse guia substitui os comandos genéricos acima para esta aplicação.
+O passo a passo específico do bootstrap Next.js e do Supabase hospedado de desenvolvimento está em [`development-setup.md`](development-setup.md); esse guia substitui os comandos genéricos acima para esta aplicação. O fluxo não usa Docker.

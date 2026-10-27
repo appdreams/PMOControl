@@ -172,11 +172,15 @@ não escolhendo silenciosamente uma fonte.
 -   `08-api/module-schema-register.md` --- índice de recursos, rotas e
     allowlists de entrada por módulo.
 -   `DEPENDENCY-MAP.md` --- dependências de implementação.
--   `IMPLEMENTATION-PLAN.md` --- ordem recomendada de construção.
--   `MVP-CHECKLIST.md` --- controle executivo/técnico do MVP.
+-   `IMPLEMENTATION-PLAN.md` --- plano vivo detalhado por fases, tarefas, dependências e gates.
+-   `MVP-CHECKLIST.md` --- checklist operacional de progresso e gates de release.
 -   `CHANGELOG.md` --- mudanças documentais relevantes.
 
-## 8. Regra de manutenção
+## 8. Estado da implementação
+
+A aplicação inicial está em `../apps/web`. A primeira tela visual de acesso da SPEC-001 está iniciada; login e recuperação ainda não estão conectados a um provedor, e o formulário permanece desabilitado. A ordem segura de implementação de Identity & Access, os gates pendentes do projeto Supabase hospedado de desenvolvimento/CI e as evidências locais ficam registrados em `IMPLEMENTATION-PLAN.md` e `MVP-CHECKLIST.md`.
+
+## 9. Regra de manutenção
 
 Mudança de comportamento deve atualizar a Spec correspondente. Mudança
 arquitetural relevante deve atualizar Architecture e, quando necessário,

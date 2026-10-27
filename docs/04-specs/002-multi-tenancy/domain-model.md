@@ -4,7 +4,7 @@
 
 ## Entidades
 
-- `Tenant`: `id`, `slug`, `display_name`, `status (active|suspended|termination_pending|export_ready|purging|terminated)`, timestamps e versão.
+- `Tenant`: `id`, `slug` gerado pelo sistema a partir de `display_name`, `status (active|suspended|termination_pending|export_ready|purging|terminated)`, timestamps e versão.
 - `Membership`: `tenant_id`, `user_id`, status, grants/role references, invited/activated/revoked timestamps.
 - `Invitation`: tenant, e-mail alvo, grants propostos, token hash, expiry de 7 dias, uso/revogação.
 - `TenantExport`: tenant, contato autorizado, escopo/version, estado, artefato protegido/checksum, disponível/notificado/baixado e retenção do artefato.

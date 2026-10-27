@@ -19,18 +19,28 @@
 - `project.data.import`: importar ao Project ativo e autorizado; `project.data.import.replace`: grant elevado separado para reinício, com motivo/audit/impacto/typed confirmation obrigatórios.
 
 - `tenant.lifecycle.create|suspend|terminate`: platform team only.
-- `membership.invite|revoke`: Tenant Admin/PMO Admin within Tenant and delegation ceiling.
+- `membership.view|invite|manage|revoke|grant`: Tenant Admin/PMO Admin within the exact Tenant. `manage` covers reversible suspension/reactivation; `revoke` remains independent. `grant` permits assigning a non-Tenant-Admin preset to another active member at an active same-Tenant Portfolio/Project scope; the resource boundary rechecks the explicit grant and deny. Invitations still require the role delegation ceiling at the exact selected scope.
 - `portfolio.view|create|edit|archive`; `project.view|create|edit|archive|assign` within explicit scope.
 - Module-specific `.view|create|edit|archive`; sensitive actions separately named.
-- `portfolio.projects.associate|remove`, `project.assign`, `milestone.forecast|complete`, `deliverable.deliver|accept|reject`, `risk.assess|respond|materialize|close`, `issue.assign|resolve|close|link-risk`, `action.reassign|complete|cancel`, `decision.approve|reject|defer|comment`, `dependency.resolve|view-impact` are command-specific grants with the resource's exact project scope.
+- `portfolio.projects.associate|remove` are sensitive grants at the exact Portfolio scope; associating a Project also requires exact `project.view` on that same-Tenant Project. `project.assign`, `milestone.forecast|complete`, `deliverable.deliver|accept|reject`, `risk.assess|respond|materialize|close`, `issue.assign|resolve|close|link-risk`, `action.reassign|complete|cancel`, `decision.approve|reject|defer|comment`, `dependency.resolve|view-impact` are command-specific grants at the resource's exact project scope.
 - `status.update.publish`: Project scope for assigned PM/authorized PMO; direct publish, no second approver in MVP.
 - `status.update.correct`: PMO Admin or Project Manager explicitly granted; reason required, creates successor.
-- `projects.{projectId}.rag-evaluations.evaluate`: calculate deterministic RAG for an authorized Project.
-- `projects.{projectId}.rag-evaluations.override`: change/revoke effective value with reason and audit; separate sensitive grant.
-- `projects.{projectId}.snapshots.view|verify`: read authorized immutable history or verify integrity; creation is internal to status publish/correct only.
+- `projects.{projectid}.rag-evaluations.evaluate`: calculate deterministic RAG for an authorized Project; `{projectid}` is substituted from the server-resolved Project ID.
+- `projects.{projectid}.rag-evaluations.override`: change/revoke effective value with reason and audit; separate sensitive grant.
+- `projects.{projectid}.snapshots.view|verify`: read authorized immutable history or verify integrity; creation is internal to status publish/correct only.
 - `financial.view|edit|export`, `resources.view|edit`, `documents.confidential.view`, `decision.approve`, `baseline.change`, `projects.{projectId}.rag-evaluations.override`, `audit.view|export`, `report.export`, `support.access`: separate sensitive grants.
 
 All access requires active membership, Tenant, scope and data policy. Explicit deny wins. No role grants cross-tenant access.
+
+**Delegação implementada (parcial):** convite scoped requer `membership.invite` no Tenant e, para cada permission do preset aplicável ao tipo escolhido, allow ativo do emissor no recurso exato sem deny ativo. Permissões do preset de outros tipos de scope não são concedidas nesse grant; permission desconhecida falha fechada. A migration `20261027165200_invite_members_at_resource_scopes.sql` revalida a regra na emissão e no aceite. Para iniciar concessões de recurso, `20261027175329_assign_resource_roles.sql` criou a capability separada `membership.grant`, limitada aos papéis administradores de Tenant, com rejeição de autoatribuição e do papel Tenant Admin no scope de recurso. RPC, API e formulário no workspace existem; falta CRUD de entidades e validação com segunda membership.
+
+## Semântica de ancestry e deny
+
+- O catálogo de scopes define um grafo dirigido e acíclico de arestas pai→filho por Tenant. Arestas permitidas são dados versionados do catálogo; o nome do papel ou do recurso nunca infere herança.
+- Um allow em scope ancestral cobre um descendente somente quando a permission declara `inheritance=descendants` e a aresta correspondente está no catálogo. Sem essa declaração, a avaliação exige scope exato.
+- Um deny ativo para a mesma permission e ator/Tenant bloqueia no mesmo scope ou em qualquer ancestral do scope solicitado, independentemente de inheritance do allow. Deny em scope descendente ou irmão não afeta o pedido atual.
+- Deny prevalece sobre todo allow aplicável. Não há wildcard, herança entre Tenants nem herança implícita de entitlement de plataforma. Aresta ausente, ciclo, grafo ambíguo ou ancestry inválida resulta em deny (`invalid_context`).
+- O avaliador recebe a ancestry somente do adapter confiável/banco; ancestry enviada pelo browser não é autoridade. Até o catálogo/adapter F1-06 existir, manter apenas scope exato e negar contexto de ancestry não validável.
 
 ## Effective MVP grants by role
 
@@ -47,7 +57,7 @@ Role names are presets; every grant remains a persisted scoped assignment. The f
 | Executive | Read assigned portfolio/project dashboards; decide only assigned decisions | Operational mutation, unassigned Project data, export, sensitive fields absent grant |
 | Viewer | Read allowlisted fields in exact assigned scope | All mutations, publication, decisions, export absent separate grant |
 
-Sensitive grants (`financial.*`, `resources.*`, `documents.confidential.view`, `decision.approve`, `baseline.change`, `rag-evaluations.override`, `audit.*`, `report.export`, `support.access`) must be separate records with issuer, scope, effective time, expiry where applicable and revocation metadata. `status.update.correct` also remains distinct from publish.
+Sensitive grants (`financial.*`, `resources.*`, `documents.confidential.view`, `decision.approve`, `baseline.change`, `projects.{projectid}.rag-evaluations.override`, `audit.*`, `report.export`, `support.access`) must be separate records with issuer, scope, effective time, expiry where applicable and revocation metadata. `status.update.correct` also remains distinct from publish.
 
 ## Entitlement de Platform Root Admin
 

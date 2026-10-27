@@ -4,12 +4,15 @@ on:
   pull_request:
     paths:
       - "apps/web/**"
+      - "supabase/**"
       - ".github/workflows/ci.yml"
   push:
     branches: [main]
     paths:
       - "apps/web/**"
+      - "supabase/**"
       - ".github/workflows/ci.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,7 +23,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint, types and production build
+    name: Lint, domain tests, types and production build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -44,7 +47,45 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
+      - name: Domain tests
+        run: pnpm test
+
       - name: Build
         run: pnpm build
         env:
           NEXT_TELEMETRY_DISABLED: "1"
+
+  database-rls:
+    name: Supabase DEV context RLS smoke check
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: supabase-dev
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Verify protected DEV configuration
+        shell: bash
+        run: |
+          if [[ "$SUPABASE_PROJECT_REF" != "xsznvegtaukrvvrgubnn" ]]; then
+            echo "The supabase-dev environment must target the designated DEV project."
+            exit 1
+          fi
+          if [[ -z "$SUPABASE_DB_URL" ]]; then
+            echo "Configure SUPABASE_DB_URL as a secret in the supabase-dev GitHub Environment."
+            exit 1
+          fi
+
+      - name: Ensure psql is available
+        run: |
+          if ! command -v psql >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install --yes postgresql-client
+          fi
+          psql --version
+
+      - name: Validate active-membership context isolation
+        run: psql --no-psqlrc --set ON_ERROR_STOP=1 --file supabase/tests/context_rls_smoke.sql "$SUPABASE_DB_URL"

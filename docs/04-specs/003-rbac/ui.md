@@ -4,7 +4,7 @@
 
 ## Conteúdo e ações
 
-Exibir `AccessGrant` dentro do scope `Tenant/Membership/Portfolio/Project`, campos prioritários `user_id, role_id, permission_key, scope_type, scope_id, effect`, origem/status e timestamps relevantes. Ações conforme grant: assignRole, revokeGrant, evaluateAccess, listEffectivePermissions. Exibir Current vs Published quando a fonte for snapshot.
+Exibir `AccessGrant` dentro do scope `Tenant/Membership/Portfolio/Project`, campos prioritários `user_id, role_id, scope_type, scope_id, effect`, origem/status e timestamps relevantes. A lista efetiva de `permission_key` é uma projeção calculada de role + role_permissions + escopo; não editar permissões diretamente no grant. Ações conforme grant: assignRole, revokeGrant, evaluateAccess, listEffectivePermissions. Exibir Current vs Published quando a fonte for snapshot.
 
 ## Estados
 
