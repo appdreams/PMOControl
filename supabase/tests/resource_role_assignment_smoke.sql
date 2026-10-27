@@ -13,6 +13,11 @@ DECLARE
   v_result JSONB;
   v_targets JSONB;
   v_key UUID := gen_random_uuid();
+  v_grant_id UUID;
+  v_revoke_key UUID := gen_random_uuid();
+  v_revoke_result JSONB;
+  v_project_role UUID := gen_random_uuid();
+  v_project UUID := gen_random_uuid();
 BEGIN
   INSERT INTO auth.users (
     id, instance_id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -33,9 +38,12 @@ BEGIN
   INSERT INTO public.portfolios (id, tenant_id, name, category, owner_id, created_by, updated_by)
   VALUES (v_portfolio, v_tenant, 'Smoke portfolio', 'internal', v_actor, v_actor, v_actor),
          (v_other_portfolio, v_other_tenant, 'Other portfolio', 'internal', v_actor, v_actor, v_actor);
+  INSERT INTO public.projects (id, tenant_id, name, status, created_by, updated_by)
+  VALUES (v_project, v_tenant, 'Manager guard smoke', 'execution', v_actor, v_actor);
   INSERT INTO public.roles (id, tenant_id, key, name, scope_type, is_system, status)
   VALUES (v_admin_role, v_tenant, 'tenant_admin', 'Tenant Admin', 'tenant', TRUE, 'active'),
-         (v_target_role, v_tenant, 'viewer', 'Viewer', 'tenant', TRUE, 'active');
+         (v_target_role, v_tenant, 'viewer', 'Viewer', 'tenant', TRUE, 'active'),
+         (v_project_role, v_tenant, 'project_manager', 'Project Manager', 'tenant', TRUE, 'active');
   INSERT INTO public.role_permissions (role_id, permission_key)
   VALUES (v_admin_role, 'membership.grant'), (v_target_role, 'portfolio.view');
   INSERT INTO public.access_grants (
@@ -64,6 +72,7 @@ BEGIN
          AND g.subject_id = v_target AND g.scope_type = 'portfolio'
          AND g.scope_id = v_portfolio::text AND g.effect = 'allow' AND g.revoked_at IS NULL
      ) THEN RAISE EXCEPTION 'Exact Portfolio role assignment failed'; END IF;
+  v_grant_id := (v_result->>'grantId')::UUID;
 
   v_result := public.assign_resource_role(
     v_tenant, v_target, 'viewer', 'portfolio', v_portfolio,
@@ -72,6 +81,51 @@ BEGIN
   IF v_result->>'idempotentReplay' <> 'true' THEN
     RAISE EXCEPTION 'Idempotent replay did not return the original grant';
   END IF;
+
+  v_revoke_result := public.revoke_resource_role_grant(
+    v_tenant, v_grant_id, 1, 'Smoke revocation', v_revoke_key
+  );
+  IF v_revoke_result->>'idempotentReplay' <> 'false'
+     OR v_revoke_result->>'version' <> '2'
+     OR NOT EXISTS (
+       SELECT 1 FROM public.access_grants AS g
+       WHERE g.id = v_grant_id AND g.revoked_at IS NOT NULL
+         AND g.revoked_by = v_actor AND g.revocation_reason = 'Smoke revocation' AND g.version = 2
+     ) OR NOT EXISTS (
+       SELECT 1 FROM public.audit_events AS a
+       WHERE a.tenant_id = v_tenant AND a.action = 'access_grant.revoke'
+         AND a.resource_id = v_grant_id AND a.idempotency_key = 'revoke:' || v_revoke_key::TEXT
+     ) THEN RAISE EXCEPTION 'Scoped grant revocation or audit failed'; END IF;
+
+  v_revoke_result := public.revoke_resource_role_grant(
+    v_tenant, v_grant_id, 1, 'Smoke revocation', v_revoke_key
+  );
+  IF v_revoke_result->>'idempotentReplay' <> 'true' OR v_revoke_result->>'version' <> '2' THEN
+    RAISE EXCEPTION 'Revocation idempotent replay failed';
+  END IF;
+
+  BEGIN
+    PERFORM public.revoke_resource_role_grant(
+      v_tenant, v_grant_id, 2, 'Changed expected version', v_revoke_key
+    );
+    RAISE EXCEPTION 'Revocation idempotency payload mismatch unexpectedly succeeded';
+  EXCEPTION WHEN unique_violation THEN NULL;
+  END;
+
+  INSERT INTO public.access_grants (
+    tenant_id, subject_id, role_id, role_scope_type, role_tenant_id,
+    scope_type, scope_id, effect, granted_by, reason
+  ) VALUES (v_tenant, v_target, v_project_role, 'tenant', v_tenant,
+            'project', v_project::text, 'allow', v_actor, 'manager guard smoke');
+  BEGIN
+    PERFORM public.revoke_resource_role_grant(
+      v_tenant,
+      (SELECT g.id FROM public.access_grants AS g WHERE g.subject_id = v_target AND g.role_id = v_project_role),
+      1, 'Must use manager reassignment', gen_random_uuid()
+    );
+    RAISE EXCEPTION 'Project manager grant was revoked outside reassignment';
+  EXCEPTION WHEN invalid_parameter_value THEN NULL;
+  END;
 
   BEGIN
     PERFORM public.assign_resource_role(
