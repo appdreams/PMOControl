@@ -51,6 +51,8 @@ nenhum Tenant, Portfolio ou Project.
   `localStorage`.
 - Erros e logs nunca incluem credenciais ou tokens completos.
 
+Eventos de login/logout, cadastro, recuperação e ciclo de tokens são mantidos nos Auth Audit Logs do Supabase; não são copiados para `public.audit_events`, evitando duplicação e preservando a divisão entre auditoria de identidade do provedor e eventos de domínio da aplicação. O schema Auth não expõe acesso direto ao cliente.
+
 ## Fora de escopo / decisões pendentes
 
 Decisões confirmadas: login MVP por e-mail e senha; MFA fica para fase posterior; SSO Google/Microsoft está fora do MVP. Auto cadastro e SCIM seguem fora de escopo. Duração exata de sessão, cookies e rate limits ficam para a revisão técnica de segurança, sem alterar o escopo de autenticação confirmado.

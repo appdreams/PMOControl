@@ -132,3 +132,4 @@ precisam de entrada individual.
 - Todas as respostas HTTP 5xx passaram a gerar log JSON correlacionado; duplicatas por requisição são suprimidas. Build de produção e 69 testes passaram, além de lint e typecheck.
 
 - Publicado o commit `9697590` em `main`; a execução GitHub Actions `40594741068` passou em todos os jobs, incluindo o smoke remoto de RLS no Supabase DEV.
+- Confirmada no DEV a trilha separada dos Auth Audit Logs do Supabase para login/logout/signup e ciclos de token; requisitos e checklist agora distinguem auditoria do provedor de eventos de domínio.

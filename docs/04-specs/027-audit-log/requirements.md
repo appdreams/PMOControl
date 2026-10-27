@@ -11,6 +11,7 @@ Eventos append-only para usuários comuns; payload minimizado, sem secrets, com 
 
 - Evento de aplicação exige ator autenticado/verificado. `actor_id` é obrigatório e `actor_type` é allowlist (`user`, `platform_service`, `system_job`), derivado do contexto de execução confiável. `user` usa `auth.uid()`; serviços/jobs usam IDs estáveis de um catálogo versionado pela aplicação, validados por par ID/tipo no writer. Ator anônimo ou email informado não pode ser usado para atribuir evento.
 - Tentativas de login falhas pré-autenticação permanecem no log do provider. Não copiar email, IP ou credencial para `audit_events`.
+- Login/logout, cadastro, recovery, alteração de senha e ciclo de tokens são auditados nos Auth Audit Logs do Supabase. `audit_events` permanece reservado a eventos de domínio autenticados; não espelhar esses eventos do provider.
 - `event_type`, `source`, `reason_code` e chaves do payload usam allowlist por comando. Valores livres não podem conter password, token, cookie, authorization header, segredo BYOK ou conteúdo de formulário. Guardar IDs internos e códigos enumerados, nunca snapshot de credenciais.
 - Evento de plataforma pode ter `tenant_id = NULL` somente para ação genuinamente platform-scoped; idempotency key continua única nesse escopo.
 
