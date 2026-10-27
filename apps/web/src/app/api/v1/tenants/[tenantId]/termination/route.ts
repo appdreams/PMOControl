@@ -1,23 +1,12 @@
 import { createApiErrorResponse, createRequestId, logApiFailure } from "@/server/infrastructure/http/api-response";
 import { isTrustedSameOriginRequest } from "@/server/infrastructure/http/same-origin";
 import { createSupabaseServerClient } from "@/server/infrastructure/supabase/server";
+import { isUuid, parseVersionedReasonRequest } from "@/modules/identity/application/versioned-reason-request";
 
 const NO_STORE = { "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer" };
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function errorResponse(status: number, code: string, message: string, requestId: string) {
   return createApiErrorResponse(status, code, message, requestId, NO_STORE);
-}
-
-function parseBody(value: unknown): { expectedVersion: number; reason: string; idempotencyKey: string } | null {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
-  const body = value as Record<string, unknown>;
-  if (Object.keys(body).length !== 3 || !Number.isSafeInteger(body.expectedVersion) ||
-      (body.expectedVersion as number) < 1 || typeof body.reason !== "string" ||
-      typeof body.idempotencyKey !== "string" || !UUID.test(body.idempotencyKey)) return null;
-  const reason = body.reason.trim();
-  if (reason.length < 1 || reason.length > 1000) return null;
-  return { expectedVersion: body.expectedVersion as number, reason, idempotencyKey: body.idempotencyKey.toLowerCase() };
 }
 
 export async function POST(
@@ -31,11 +20,11 @@ export async function POST(
   }
 
   const { tenantId } = await context.params;
-  if (!UUID.test(tenantId)) return errorResponse(404, "NOT_FOUND", "Organização indisponível.", requestId);
+  if (!isUuid(tenantId)) return errorResponse(404, "NOT_FOUND", "Organização indisponível.", requestId);
   let value: unknown;
   try { value = await request.json(); }
   catch { return errorResponse(400, "INVALID_REQUEST", "The request body must be valid JSON.", requestId); }
-  const body = parseBody(value);
+  const body = parseVersionedReasonRequest(value);
   if (!body) return errorResponse(422, "INVALID_REQUEST", "Informe a versão atual, o motivo e uma chave de operação válida.", requestId);
 
   try {
@@ -66,7 +55,7 @@ export async function POST(
     if (result.tenantId !== tenantId.toLowerCase() || result.status !== "termination_pending" ||
         !Number.isSafeInteger(result.version) || (result.version as number) !== body.expectedVersion + 1 ||
         typeof result.terminationStartedAt !== "string" || Number.isNaN(Date.parse(result.terminationStartedAt)) ||
-        typeof result.correlationId !== "string" || !UUID.test(result.correlationId) ||
+        typeof result.correlationId !== "string" || !isUuid(result.correlationId) ||
         typeof result.idempotentReplay !== "boolean") {
       return errorResponse(503, "SERVICE_UNAVAILABLE", "Não foi possível validar a transição.", requestId);
     }

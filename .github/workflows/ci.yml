@@ -56,7 +56,7 @@ jobs:
           NEXT_TELEMETRY_DISABLED: "1"
 
   database-rls:
-    name: Supabase DEV context RLS smoke check
+    name: Supabase DEV RLS and identity transactional smokes
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment: supabase-dev
