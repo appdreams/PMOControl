@@ -87,6 +87,16 @@ jobs:
           fi
           psql --version
 
+      - name: Verify local migrations match Supabase DEV history
+        shell: bash
+        run: |
+          local_versions="$(find supabase/migrations -maxdepth 1 -type f -name '*.sql' -printf '%f\n' | sed -E 's/_.*$//' | sort)"
+          remote_versions="$(psql --no-psqlrc --set ON_ERROR_STOP=1 --tuples-only --no-align --command 'select version from supabase_migrations.schema_migrations order by version' "$SUPABASE_DB_URL")"
+          if ! diff --unified=3 <(printf '%s\n' "$local_versions") <(printf '%s\n' "$remote_versions"); then
+            echo "Local Supabase migration files do not match the protected DEV migration history. Reconcile filenames/history before continuing."
+            exit 1
+          fi
+
       - name: Validate Identity and Tenant transactional smokes
         run: |
           for smoke in \
