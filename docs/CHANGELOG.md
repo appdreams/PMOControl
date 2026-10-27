@@ -133,3 +133,5 @@ precisam de entrada individual.
 
 - Publicado o commit `9697590` em `main`; a execução GitHub Actions `40594741068` passou em todos os jobs, incluindo o smoke remoto de RLS no Supabase DEV.
 - Confirmada no DEV a trilha separada dos Auth Audit Logs do Supabase para login/logout/signup e ciclos de token; requisitos e checklist agora distinguem auditoria do provedor de eventos de domínio.
+
+- Revisado o plano de fase: contexto de sessão, fronteiras RPC/RLS e catálogo/grants foram concluídos; regressão negativa por rota continua contabilizada em F1-13.
