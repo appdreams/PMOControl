@@ -86,6 +86,11 @@ button, input { font: inherit; }
 .workspace-card { width: min(100%, 840px); margin: clamp(48px, 9vh, 100px) auto; padding: clamp(28px, 5vw, 56px); border: 1px solid #087ab5; border-radius: 14px; background: linear-gradient(145deg, rgba(3,17,36,.96), rgba(1,10,24,.94)); box-shadow: 0 14px 70px #0008; }
 .workspace-card h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.035em; }
 .workspace-card > p { color: #d2dced; line-height: 1.6; }
+.tenant-export-notifications { margin: 0 0 28px; padding: 18px; border: 1px solid #087ab5; border-radius: 10px; background: rgba(4, 28, 49, .72); }
+.tenant-export-notifications h2 { margin: 0 0 6px; font-size: 18px; }
+.tenant-export-notifications > p, .tenant-export-notice p { margin: 5px 0; color: #c6d5e8; font-size: 13px; line-height: 1.5; }
+.tenant-export-notice { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin-top: 12px; padding: 14px 0 0; border-top: 1px solid #155579; }
+.tenant-export-notice h3 { margin: 0; font-size: 15px; }
 .workspace-nav { display: flex; flex-wrap: wrap; gap: 9px; margin: 22px 0 8px; }
 .workspace-nav a { min-height: 40px; display: inline-flex; align-items: center; padding: 8px 13px; border: 1px solid #155579; border-radius: 999px; background: #06182b; color: #bfefff; font-size: 13px; }
 .workspace-nav a:hover, .workspace-nav a:focus-visible { border-color: #08c9f1; background: #09243b; color: #fff; outline: 2px solid #08c9f180; outline-offset: 2px; }

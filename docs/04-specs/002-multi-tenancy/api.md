@@ -1,6 +1,6 @@
 # SPEC-002 — Multi-Tenancy — API
 
-**Status:** Draft — invite and membership revocation implementation partial; Tenant lifecycle pending
+**Status:** In progress — Tenant provisioning, invitations, membership lifecycle and export generation/download/notification are implemented; dispute, legal hold and purge endpoints remain pending.
 **Spec:** 002  
 **Módulo:** Multi-Tenancy
 
@@ -24,6 +24,9 @@ Tenant context é derivado da sessão/membership verificada no servidor. O clien
 - `POST /api/v1/invitations/{token}/accept`: valida token único/expirável, identidade verificada e membership resultante.
 - `POST /api/v1/tenants/{tenantId}/invitations/first-admin`: recebe `{ email, reason }`; exige o operador criador do Tenant e grant vigente `tenant.lifecycle.create`, sem deny. Emite somente o preset `tenant_admin`, revoga convite pendente anterior e retorna o link uma única vez, com token no fragmento `#token=`. O sistema não envia e-mail.
 - `POST /api/v1/tenants/{tenantId}/termination`: recebe `{ expectedVersion, reason, idempotencyKey }`; exige `tenant.lifecycle.terminate` em grant de plataforma vigente e sem deny. Só inicia a transição `active|suspended → termination_pending`, bloqueando operações normais e registrando audit atomicamente. O endpoint não gera export, não inicia o prazo de purge e não apaga dados; essas etapas dependem de artifact privado verificável, validação/entrega, retenção e checagem de hold/contestação.
+- `POST /api/v1/tenants/{tenantId}/export`: solicita exportação com autorização da plataforma; o worker gera e verifica o artifact privado antes de iniciar a retenção de 90 dias.
+- `POST /api/v1/tenant-exports/notifications`: o contato autenticado lista avisos de export disponível; o primeiro reconhecimento é idempotente e auditado.
+- `POST /api/v1/tenant-exports/{exportId}/download`: o contato designado obtém o artifact privado com verificação de checksum; o primeiro download é auditado uma vez.
 - `POST /api/v1/invitations/accept`: recebe `{ token }`; exige sessão Auth com e-mail confirmado correspondente. O RPC encaminha primeiro-admin e membro comum ao handler isolado correto. O convite comum revalida estado de Tenant/membership e delegation ceiling atual do emissor; consome link e cria/reactiva membership, grant e audit atomicamente. Resposta não revela Tenant/e-mail em falha.
 - Acceptance requires provider-verified email matching the invite, atomically consumes the token and creates/reactivates Membership plus the scoped role assignment, and rechecks the issuer's delegation ceiling. The public response must not reveal whether a different email or Tenant exists.
 - `GET /api/v1/session/tenants`: retorna somente memberships ativas do ator, como `{ tenants: [{ id, name }], selectedTenantId, correlationId }`. Se houver uma única membership ativa, ela é selecionada como sugestão da resposta; com múltiplas, `selectedTenantId` é `null`; sem memberships, retorna lista vazia. Não grava seleção nem transforma o ID em autoridade. Resposta usa `Cache-Control: private, no-store`; erros seguem o envelope global.

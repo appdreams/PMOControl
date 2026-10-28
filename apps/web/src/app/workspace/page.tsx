@@ -6,6 +6,7 @@ import { TenantSelector } from "./TenantSelector";
 import { TenantMembersPanel } from "./TenantMembersPanel";
 import { TenantResourceManagement } from "./TenantResourceManagement";
 import { MyProfileForm } from "./MyProfileForm";
+import { TenantExportNotifications } from "./TenantExportNotifications";
 import { resolveSupabaseRequestContext } from "@/server/infrastructure/supabase/request-context";
 import { createSupabaseServerClient } from "@/server/infrastructure/supabase/server";
 import { getSupabasePublicConfig } from "@/server/infrastructure/supabase/config";
@@ -29,6 +30,7 @@ async function WorkspaceContent({ searchParams }: PageProps<"/workspace">) {
     </header>
 
     <section className="workspace-card" aria-labelledby="workspace-title">
+      <TenantExportNotifications />
       {resolution.ok ? <>
         <p className="workspace-eyebrow">Sessão autenticada</p>
         <h1 id="workspace-title">Bem-vindo ao PMO Control</h1>

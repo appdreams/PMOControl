@@ -21,6 +21,7 @@ DECLARE
   v_available_at TIMESTAMPTZ;
   v_purge_after TIMESTAMPTZ;
   v_audit_count BIGINT;
+  v_notification_audit_count BIGINT;
 BEGIN
   INSERT INTO auth.users (
     id, instance_id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -185,6 +186,23 @@ BEGIN
   END IF;
   v_final := public.record_my_tenant_export_download(v_export);
   IF v_final->>'idempotentReplay' <> 'true' THEN RAISE EXCEPTION 'Download audit replay failed'; END IF;
+  PERFORM set_config('request.jwt.claim.sub', v_other::TEXT, TRUE);
+  v_bundle_response := public.list_and_acknowledge_my_tenant_exports();
+  IF jsonb_array_length(v_bundle_response) <> 0 THEN
+    RAISE EXCEPTION 'Unrelated user received export notifications';
+  END IF;
+  PERFORM set_config('request.jwt.claim.sub', v_contact::TEXT, TRUE);
+  v_bundle_response := public.list_and_acknowledge_my_tenant_exports();
+  IF jsonb_array_length(v_bundle_response) <> 1
+     OR v_bundle_response->0->>'exportId' <> v_export::TEXT
+     OR v_bundle_response->0->>'tenantName' <> 'Export generation smoke'
+     OR v_bundle_response->0->>'notifiedAt' IS NULL THEN
+    RAISE EXCEPTION 'Authorized contact did not receive an export notification';
+  END IF;
+  v_final := public.list_and_acknowledge_my_tenant_exports();
+  IF v_final->0->>'notifiedAt' <> v_bundle_response->0->>'notifiedAt' THEN
+    RAISE EXCEPTION 'Export notification was not idempotent';
+  END IF;
   EXECUTE 'RESET ROLE';
   SELECT count(*) INTO v_audit_count FROM public.audit_events AS a
     WHERE a.tenant_id IS NULL AND a.source = 'tenant-export-download'
@@ -192,6 +210,12 @@ BEGIN
   IF v_audit_count <> 1 OR NOT EXISTS (
     SELECT 1 FROM public.tenant_exports AS e WHERE e.id = v_export AND e.first_downloaded_at IS NOT NULL
   ) THEN RAISE EXCEPTION 'First export download was not audited exactly once'; END IF;
+  SELECT count(*) INTO v_notification_audit_count FROM public.audit_events AS a
+    WHERE a.tenant_id IS NULL AND a.source = 'tenant-export-notification'
+      AND a.idempotency_key = v_export::TEXT;
+  IF v_notification_audit_count <> 1 OR NOT EXISTS (
+    SELECT 1 FROM public.tenant_exports AS e WHERE e.id = v_export AND e.notified_at IS NOT NULL
+  ) THEN RAISE EXCEPTION 'Export notification was not audited exactly once'; END IF;
 END;
 $smoke$;
 ROLLBACK;

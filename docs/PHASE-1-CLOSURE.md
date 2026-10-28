@@ -15,10 +15,10 @@
 
 | Gate | Condição objetiva | Situação |
 |---|---|---|
-| C1 — Identity/Tenant/RBAC | Schema, isolamento, grants, convites e lifecycle cobertos por migrations e smokes DEV; sem finding de FK sem índice neste schema. | Em andamento |
+| C1 — Identity/Tenant/RBAC | Schema, isolamento, grants, convites e lifecycle cobertos por migrations e smokes DEV; sem finding de FK sem índice neste schema. | Concluído — migration `20261028012242` aplicada; advisor sem FK sem índice; CI `40614850205` passou com 35 migrations. |
 | C2 — Auth/onboarding | Fluxos descritos no escopo implementados; estados de sessão e abuso cobertos; perfil self-service funcional. | Em andamento |
 | C3 — Audit | Operações sensíveis e alterações de credenciais auditáveis, com scrub verificado por testes. | Em andamento |
-| C4 — Tenant export/retention | Entrega, disputa, hold e purge implementados e testados com fixtures; nenhum dado real precisa ser apagado para validar. | Em andamento |
+| C4 — Tenant export/retention | Exportação privada verificável, notificação/download do contato, disputa, hold e purge retomável implementados e testados com fixtures; nenhum dado real precisa ser apagado para validar. | Em andamento — notificação e download estão implementados; disputa, hold e purge pendentes. |
 | C5 — Verificação/docs | Matriz negativa, CI verde e Specs 001/002/003/027 revisadas; este arquivo, `IMPLEMENTATION-PLAN.md` e `MVP-CHECKLIST.md` concordam. | Em andamento |
 
 ## Fora do bloqueio da Fase 1
@@ -30,9 +30,8 @@
 
 ## Próxima sequência fixa
 
-1. C1: resolver a única FK sem índice remanescente no schema privado de RBAC.
-2. C4: completar o ciclo de export, disputa/hold e purge seguro.
-3. C2/C3: concluir estados e limites de autenticação, perfil e auditoria/scrub.
-4. C5: fechar a matriz negativa, revisar as quatro Specs e validar CI/documentos.
+1. C4: implementar disputa, hold e purge seguro e retomável.
+2. C2/C3: concluir estados e limites de autenticação, perfil e auditoria/scrub.
+3. C5: fechar a matriz negativa, revisar as quatro Specs e validar CI/documentos.
 
 Não adicionar novo item de fechamento sem registrar primeiro a mudança de escopo aqui.
