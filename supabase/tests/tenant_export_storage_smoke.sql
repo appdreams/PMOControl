@@ -30,11 +30,11 @@ BEGIN
   INSERT INTO public.tenant_exports (
     id, tenant_id, requested_by, contact_user_id, status, artifact_path,
     artifact_sha256, artifact_bytes, manifest, generated_at, available_at,
-    purge_after, idempotency_key
+    purge_after, idempotency_key, requested_tenant_version
   ) VALUES (
     v_export, v_tenant, v_contact, v_contact, 'available', v_path,
     decode(repeat('ab', 32), 'hex'), 8, '{"datasets":[]}'::JSONB,
-    now(), now(), now() + INTERVAL '90 days', gen_random_uuid()
+    now(), now(), now() + INTERVAL '90 days', gen_random_uuid(), 1
   );
   INSERT INTO storage.objects (bucket_id, name, owner_id, metadata)
   VALUES ('tenant-exports', v_path, v_contact::TEXT,
