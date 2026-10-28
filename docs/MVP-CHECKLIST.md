@@ -12,11 +12,11 @@
 
 **Fonte única de escopo e critério de 100%:** [`PHASE-1-CLOSURE.md`](PHASE-1-CLOSURE.md). Não contar pendências da Fase 2 nem gates de produção nesta lista. O usuário decidiu manter o Supabase no plano Free; a proteção contra senhas vazadas fica registrada como exceção aceita.
 
-- [x] **C1 — Identity/Tenant/RBAC:** constraints e índices, isolamento, grants, convites e lifecycle. Migration `20261028012242_index_rbac_preset_permission_fk.sql` aplicada; advisor sem FK sem índice e CI `40614850205` passou com 35 migrations.
+- [x] **C1 — Identity/Tenant/RBAC:** constraints e índices, isolamento, grants, convites e lifecycle. Migration `20261028012242_index_rbac_preset_permission_fk.sql` aplicada; advisor sem FK sem índice e CI `40616066451` passou com paridade das 36 migrations e smokes.
 - [~] **C2 — Auth/onboarding:** validar login, recovery/reset, callback, logout, renovação e estados de sessão negada/expirada; confirmar proteção de abuso e perfil self-service com testes. Não exige que todos os usuários preencham seus nomes reais para liberar a fase.
 - [~] **C3 — Audit:** confirmar eventos append-only de operações sensíveis, recovery/alteração de credenciais e scrub por testes; tokens e segredos não podem aparecer em audit/log.
 - [~] **C4 — Export/retention de Tenant:** exportação verificada, notificação no workspace e download autenticado pelo contato estão implementados; migration `20261028012723_notify_contacts_of_available_exports.sql` e smoke transacional incluídos. Falta contestação, legal hold e purge retomável; validar apenas com fixtures e rollback, sem apagar Tenant real.
-- [~] **C5 — Testes/documentação:** ampliar matriz negativa dos endpoints incluídos em C1–C4, manter smokes no CI e revisar Specs 001/002/003/027. CI `40614850205` validou 78 testes, build, 35 migrations e sete smokes antes da migration de notificação; 36 migrations estão no DEV. O CI precisa revalidar esta revisão publicada.
+- [~] **C5 — Testes/documentação:** ampliar matriz negativa dos endpoints incluídos em C1–C4, manter smokes no CI e revisar Specs 001/002/003/027. CI `40616066451` validou lint, typecheck, 78 testes, build, paridade das 36 migrations e smokes transacionais. Revisão das Specs e matriz negativa de C2–C4 continuam no escopo fixo.
 
 **Fora dos gates:** CRUD/UX de Portfolio/Project (Fase 2), SMTP customizado, MFA/SSO, expiração absoluta de sessão, ambientes/deploy/backup de produção e testes que exijam uma terceira conta real. Os fluxos suportados precisam de smokes automatizados, não de alteração de dados de pessoas reais.
 ## 2. Core Specs
