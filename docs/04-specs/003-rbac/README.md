@@ -1,6 +1,6 @@
 # SPEC-003 --- RBAC & Contextual Authorization --- Readme
 
-**Status:** Draft — remediation required\
+**Status:** In progress — versioned permission catalog and scoped authorization foundation implemented; full negative route/entity matrix and domain review remain pending.\
 **Spec:** 003\
 **Módulo:** RBAC & Contextual Authorization\
 **Arquivo:** `README.md`

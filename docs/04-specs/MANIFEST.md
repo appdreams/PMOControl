@@ -1,8 +1,8 @@
 # PMO Control --- 04-specs Manifest
 
-**Status:** Draft — remediation required
+**Status:** Draft — semantic review and cross-spec traceability remain incomplete.
 
-A presença dos 13 arquivos do template por pasta comprova estrutura, não completude semântica nem aprovação. Specs podem conter anexos normativos versionados; SPEC-028 inclui o contrato de workbook de importação. Todas as Specs estão Draft até revisão de domínio e rastreabilidade.
+A presença dos 13 arquivos do template por pasta comprova estrutura, não completude semântica nem aprovação. Specs podem conter anexos normativos versionados; SPEC-028 inclui o contrato de workbook de importação. Todas as Specs permanecem Draft até revisão de domínio e rastreabilidade. As Specs 001, 002, 003 e 027 indicam separadamente que têm implementação parcial em DEV e enumeram os gates pendentes; esse status não equivale a aprovação nem conclusão.
 
 -   Specs: 29
 -   Arquivos por Spec (template): 13

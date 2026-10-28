@@ -1,6 +1,6 @@
 # SPEC-001 --- Authentication --- Readme
 
-**Status:** Draft — remediation required\
+**Status:** In progress — authentication and session foundation implemented; provider/security review and complete session-state validation remain pending.\
 **Spec:** 001\
 **Módulo:** Authentication\
 **Arquivo:** `README.md`

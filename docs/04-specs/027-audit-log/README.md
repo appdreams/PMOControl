@@ -1,6 +1,6 @@
 # SPEC-027 --- Audit Log --- Readme
 
-**Status:** Draft — remediation required\
+**Status:** In progress — append-only audit foundation and transactional events implemented; systematic payload scrub and remaining Auth-event observability review remain pending.\
 **Spec:** 027\
 **Módulo:** Audit Log\
 **Arquivo:** `README.md`
