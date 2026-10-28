@@ -1,6 +1,6 @@
 # SPEC-001 --- Authentication --- Readme
 
-**Status:** In progress — MVP login, recovery, callback, logout, SSR refresh, self-service profile and invalid/expired session messaging implemented; production session-age/provider settings remain outside the Phase 1 gate.\
+**Status:** Fase 1 concluída — MVP login, recovery, callback, logout, SSR refresh, self-service profile and invalid/expired session messaging implemented and covered by CI `40621234785`; production session-age/provider settings remain outside the Phase 1 gate.\
 **Spec:** 001\
 **Módulo:** Authentication\
 **Arquivo:** `README.md`

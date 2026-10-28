@@ -1,6 +1,6 @@
 # SPEC-027 --- Audit Log --- Readme
 
-**Status:** MVP audit foundation implemented in DEV — append-only boundary, atomic domain events, credential-event provider logs and database payload redaction guard are covered.\
+**Status:** Fase 1 concluída — append-only boundary, atomic domain events, credential-event provider logs and database payload redaction guard are covered; CI `40621234785` passed. Query/export UI remains future scope.\
 **Spec:** 027\
 **Módulo:** Audit Log\
 **Arquivo:** `README.md`

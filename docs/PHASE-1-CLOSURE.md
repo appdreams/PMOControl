@@ -15,11 +15,11 @@
 
 | Gate | Condição objetiva | Situação |
 |---|---|---|
-| C1 — Identity/Tenant/RBAC | Schema, isolamento, grants, convites e lifecycle cobertos por migrations e smokes DEV; sem finding de FK sem índice neste schema. | Concluído — migration `20261028012242` aplicada; advisor sem FK sem índice; CI `40616066451` passou com paridade das 36 migrations e smokes. |
-| C2 — Auth/onboarding | Fluxos descritos no escopo implementados; estados de sessão e abuso cobertos; perfil self-service funcional. | Em andamento — sessão inválida/expirada agora retorna mensagem de reautenticação testada; login/recovery neutros e Auth provider limits cobertos. Aguardar CI verde atualizado. |
-| C3 — Audit | Operações sensíveis e alterações de credenciais auditáveis, com scrub verificado por testes. | Em andamento — logs Auth do provider agregados sem PII; constraint recursivo de payload/reason e rejeição sem escrita parcial testados no DEV. Aguardar CI verde atualizado. |
-| C4 — Tenant export/retention | Exportação privada verificável, notificação/download do contato, disputa, hold e purge retomável implementados e testados com fixtures; nenhum dado real precisa ser apagado para validar. | Concluído — smoke transacional DEV passou com rollback; Edge Function `tenant-export` v2 implantada com Storage API; CI `40619429844` passou nos jobs de lint/test/types/build e smokes Supabase, com paridade das 40 migrations. Nenhum dado real foi purgado. |
-| C5 — Verificação/docs | Matriz negativa, CI verde e Specs 001/002/003/027 revisadas; este arquivo, `IMPLEMENTATION-PLAN.md` e `MVP-CHECKLIST.md` concordam. | Em andamento |
+| C1 — Identity/Tenant/RBAC | Schema, isolamento, grants, convites e lifecycle cobertos por migrations e smokes DEV; sem finding de FK sem índice neste schema. | Concluído — migration `20261028012242` aplicada; advisor sem FK sem índice; CI `40621234785` confirmou paridade das 41 migrations e smokes de identidade/Tenant. |
+| C2 — Auth/onboarding | Fluxos descritos no escopo implementados; estados de sessão e abuso cobertos; perfil self-service funcional. | Concluído — testes cobrem sessão expirada e query forjada; login/recovery neutros, callback/logout/renovação e perfil self-service cobertos; CI `40621234785` passou lint, testes, tipos e build. |
+| C3 — Audit | Operações sensíveis e alterações de credenciais auditáveis, com scrub verificado por testes. | Concluído — Auth Audit Logs agregados sem PII; constraint recursivo de payload/reason e rejeição sem escrita parcial passaram no smoke DEV; CI `40621234785` verde. |
+| C4 — Tenant export/retention | Exportação privada verificável, notificação/download do contato, disputa, hold e purge retomável implementados e testados com fixtures; nenhum dado real precisa ser apagado para validar. | Concluído — smoke transacional DEV passou com rollback; Edge Function `tenant-export` v2 implantada com Storage API; CI `40619429844` passou com paridade das 40 migrations. Nenhum dado real foi purgado. |
+| C5 — Verificação/docs | Matriz negativa, CI verde e Specs 001/002/003/027 revisadas; este arquivo, `IMPLEMENTATION-PLAN.md` e `MVP-CHECKLIST.md` concordam. | Concluído — revisão semântica das quatro Specs e dos três documentos de planejamento concluída; CI `40621234785` verde, com paridade das 41 migrations, smokes DEV, testes (81), lint, tipos e build. |
 
 ## Fora do bloqueio da Fase 1
 
@@ -28,9 +28,6 @@
 - Fase 2 e posteriores: CRUD e UX de Portfolio/Project e módulos de negócio. Os smokes existentes desses fluxos podem continuar no CI, mas seu desenvolvimento não altera o critério de conclusão da Fase 1.
 - Testes com uma terceira conta real ou mudanças em dados reais de usuário. Os fluxos devem passar por smokes com fixtures; nenhuma pessoa precisa aceitar convite nem ter seus dados alterados para concluir a fase.
 
-## Próxima sequência fixa
+## Encerramento
 
-1. C2/C3: concluir estados e limites de autenticação, perfil e auditoria/scrub.
-2. C5: fechar a matriz negativa, revisar as quatro Specs e validar CI/documentos.
-
-Não adicionar novo item de fechamento sem registrar primeiro a mudança de escopo aqui.
+**Fase 1 concluída (C1–C5).** Os gates estão fechados; não há ação restante dentro desta fase. Não adicionar novo item de fechamento sem decisão explícita e atualização desta página. A exceção do plano Free permanece aceita e não bloqueia o encerramento.

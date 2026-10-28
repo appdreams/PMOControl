@@ -1,6 +1,6 @@
 # SPEC-003 --- RBAC & Contextual Authorization --- Readme
 
-**Status:** In progress — versioned permission catalog, Tenant/resource delegation, lifecycle and exact-scope authorization implemented in DEV; remaining query surfaces and broader domain features are outside the Phase 1 gate.\
+**Status:** Fase 1 concluída — versioned permission catalog, Tenant/resource delegation, lifecycle and exact-scope authorization implemented in DEV; migrations and transactional smokes passed CI `40621234785`. Remaining query surfaces and broader domain features belong to later phases.\
 **Spec:** 003\
 **Módulo:** RBAC & Contextual Authorization\
 **Arquivo:** `README.md`

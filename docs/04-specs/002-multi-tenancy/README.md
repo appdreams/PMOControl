@@ -1,6 +1,6 @@
 # SPEC-002 --- Multi-Tenancy --- Readme
 
-**Status:** In progress — Tenant, membership, invitation and export/retention flows through dispute, legal hold and resumable purge are implemented in DEV.\
+**Status:** Fase 1 concluída — Tenant, membership, invitation and export/retention flows through dispute, legal hold and resumable purge are implemented in DEV; migrations and transactional smokes passed CI `40621234785`. Features de negócio posteriores permanecem no escopo das fases seguintes.\
 **Spec:** 002\
 **Módulo:** Multi-Tenancy\
 **Arquivo:** `README.md`
