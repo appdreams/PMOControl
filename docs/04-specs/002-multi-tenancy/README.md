@@ -1,6 +1,6 @@
 # SPEC-002 --- Multi-Tenancy --- Readme
 
-**Status:** In progress — Tenant, membership, invitation and resource foundations implemented in DEV; export delivery, dispute/legal hold and retention purge remain pending.\
+**Status:** In progress — Tenant, membership, invitation and resource foundations implemented in DEV; export reservation, allowlisted snapshot, private artifact worker and finalization are implemented. Contact delivery/notification, dispute/legal hold workflows and retention purge remain pending.\
 **Spec:** 002\
 **Módulo:** Multi-Tenancy\
 **Arquivo:** `README.md`

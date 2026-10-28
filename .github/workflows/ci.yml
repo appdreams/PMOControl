@@ -105,7 +105,8 @@ jobs:
             supabase/tests/resource_role_assignment_smoke.sql \
             supabase/tests/portfolio_project_read_create_smoke.sql \
             supabase/tests/tenant_termination_smoke.sql \
-            supabase/tests/tenant_export_storage_smoke.sql; do
+            supabase/tests/tenant_export_storage_smoke.sql \
+            supabase/tests/tenant_export_generation_smoke.sql; do
             echo "Running $smoke"
             psql --no-psqlrc --set ON_ERROR_STOP=1 --file "$smoke" "$SUPABASE_DB_URL"
           done
