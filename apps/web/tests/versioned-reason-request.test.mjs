@@ -23,6 +23,9 @@ test("versioned operation rejects missing, forged, unsafe, and extra fields", ()
   assert.equal(parseVersionedReasonRequest({ ...base, expectedVersion: 0 }), null);
   assert.equal(parseVersionedReasonRequest({ ...base, idempotencyKey: "forged" }), null);
   assert.equal(parseVersionedReasonRequest({ ...base, reason: "   " }), null);
+  assert.equal(parseVersionedReasonRequest({ ...base, reason: "password=must-not-be-stored" }), null);
+  assert.equal(parseVersionedReasonRequest({ ...base, reason: "Bearer abcdefghijklmnopqrstuvwxyz" }), null);
+  assert.equal(parseVersionedReasonRequest({ ...base, reason: "eyJabcdefghij.abcdefghijk.abcdefghijk" }), null);
 });
 
 test("UUID path identifiers accept canonical UUIDs and reject malformed or forged identifiers", () => {

@@ -15,6 +15,7 @@ DECLARE
   v_key UUID := gen_random_uuid();
   v_grant_id UUID;
   v_revoke_key UUID := gen_random_uuid();
+  v_sensitive_reason_key UUID := gen_random_uuid();
   v_revoke_result JSONB;
   v_project_role UUID := gen_random_uuid();
   v_project UUID := gen_random_uuid();
@@ -82,6 +83,17 @@ BEGIN
     RAISE EXCEPTION 'Idempotent replay did not return the original grant';
   END IF;
 
+  BEGIN
+    PERFORM public.revoke_resource_role_grant(
+      v_tenant, v_grant_id, 1, 'password=must-not-be-stored', v_sensitive_reason_key
+    );
+    RAISE EXCEPTION 'Sensitive audit reason unexpectedly passed the redaction constraint';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+  IF NOT EXISTS (SELECT 1 FROM public.access_grants WHERE id = v_grant_id AND revoked_at IS NULL)
+     OR EXISTS (SELECT 1 FROM public.audit_events WHERE idempotency_key = 'revoke:' || v_sensitive_reason_key::TEXT)
+  THEN RAISE EXCEPTION 'Rejected sensitive audit payload partially changed domain state'; END IF;
+
   v_revoke_result := public.revoke_resource_role_grant(
     v_tenant, v_grant_id, 1, 'Smoke revocation', v_revoke_key
   );
@@ -95,6 +107,9 @@ BEGIN
        SELECT 1 FROM public.audit_events AS a
        WHERE a.tenant_id = v_tenant AND a.action = 'access_grant.revoke'
          AND a.resource_id = v_grant_id AND a.idempotency_key = 'revoke:' || v_revoke_key::TEXT
+         AND COALESCE(a.reason, '') !~* '(password|token|secret|cookie|authorization)[[:space:]]*[:=]'
+         AND COALESCE(a.before_redacted::TEXT, '') !~* '(password|token|secret|cookie|authorization)'
+         AND COALESCE(a.after_redacted::TEXT, '') !~* '(password|token|secret|cookie|authorization)'
      ) THEN RAISE EXCEPTION 'Scoped grant revocation or audit failed'; END IF;
 
   v_revoke_result := public.revoke_resource_role_grant(

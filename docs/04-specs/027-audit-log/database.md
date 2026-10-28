@@ -1,6 +1,6 @@
 # SPEC-027 — Audit Log — Database
 
-**Status:** Draft — modelo lógico e constraints necessários
+**Status:** MVP schema applied in DEV; broader query/export schema remains future scope
 
 ## Tabela lógica
 
@@ -10,6 +10,7 @@
 
 - PK UUID; `occurred_at` is UTC; action/source/schema and actor_type are allowlisted; `before_redacted/after_redacted` are scrubbed by event-specific schema before persistence and secrets/auth tokens are rejected. Pre-authentication failures are not application audit rows. No foreign key to polymorphic resource, but tenant/resource scope is validated by trusted writer.
 - `CREATE UNIQUE INDEX ... ON audit_events (tenant_id,source,idempotency_key) NULLS NOT DISTINCT WHERE idempotency_key IS NOT NULL` prevents duplicate platform events where `tenant_id` is NULL as well as tenant events. PostgreSQL baseline is 17. Actor identity is resolved from the verified caller/service boundary; client-provided actor IDs are rejected. Application role has no update/delete; inserts use the authenticated command/RPC boundary and retention purge uses a separate audited procedure.
+- Migration `20261028021850_enforce_audit_payload_redaction.sql` installs a recursive JSON safety check and constrains reason, `before_redacted` and `after_redacted`; known credential-key/value formats fail the same transaction. The transactional `resource_role_assignment_smoke.sql` verifies an unsafe reason is rejected without revoking the grant or creating an audit row. `context_rls_smoke.sql` checks authenticated has no direct read/write privileges and RLS remains enabled.
 - Indexes `(tenant_id,occurred_at DESC)`, `(tenant_id,resource_type,resource_id,occurred_at DESC)`, `(tenant_id,actor_id,occurred_at DESC)`, `(tenant_id,correlation_id)`.
 
 ## RLS e transações

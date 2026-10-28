@@ -1,6 +1,6 @@
 # SPEC-027 --- Audit Log --- Readme
 
-**Status:** In progress — append-only audit foundation and transactional events implemented; systematic payload scrub and remaining Auth-event observability review remain pending.\
+**Status:** MVP audit foundation implemented in DEV — append-only boundary, atomic domain events, credential-event provider logs and database payload redaction guard are covered.\
 **Spec:** 027\
 **Módulo:** Audit Log\
 **Arquivo:** `README.md`

@@ -17,7 +17,7 @@ async function WorkspaceContent({ searchParams }: PageProps<"/workspace">) {
   const tenantSelector = typeof params.tenantId === "string" ? params.tenantId : undefined;
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getClaims();
-  if (error || typeof data?.claims?.sub !== "string") redirect("/");
+  if (error || typeof data?.claims?.sub !== "string") redirect("/?session=expired");
 
   const resolution = await resolveSupabaseRequestContext(tenantSelector);
   return <main className="workspace-screen">
@@ -56,7 +56,7 @@ async function WorkspaceContent({ searchParams }: PageProps<"/workspace">) {
         <h1 id="workspace-title">Contexto temporariamente indisponível</h1>
         <p>Não foi possível carregar suas organizações agora. Tente novamente.</p>
         <MyProfileForm />
-      </> : resolution.reason === "unauthenticated" ? redirect("/") : <>
+      </> : resolution.reason === "unauthenticated" ? redirect("/?session=expired") : <>
         <p className="workspace-eyebrow">Sessão autenticada</p>
         <h1 id="workspace-title">Sua conta ainda não pertence a uma organização</h1>
         <p>Dados de Tenant exigem uma membership ativa. Operadores de plataforma podem provisionar uma organização.</p>

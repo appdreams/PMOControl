@@ -1,6 +1,6 @@
 # SPEC-003 — RBAC & Contextual Authorization — Business Rules
 
-**Status:** Draft — rules defined; final default-grant review pending
+**Status:** MVP rules applied through the versioned permission catalog and scoped grants in DEV
 
 - **BR-003-01:** default deny; explicit deny overrides matching allow.
 - **BR-003-02:** access decision requires active identity, membership, Tenant, role grant, resource scope, permission, data policy and valid domain state.

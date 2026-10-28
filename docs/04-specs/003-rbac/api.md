@@ -1,12 +1,12 @@
 # SPEC-003 — RBAC & Contextual Authorization — API
 
-**Status:** Draft — logical grant APIs; schema/policy versioning pending
+**Status:** MVP scoped grant and versioned catalog APIs implemented in DEV; broader permission query surfaces remain future scope
 
 ## User/admin routes
 
 - `GET /api/v1/access-grants`: list grants visible to administrator's Tenant/scope; allowlisted filters for subject, role, scope, status.
 - `POST /api/v1/access-grants`: Tenant role assignment through the established delegation ceiling.
-- `POST /api/v1/tenants/{tenantId}/resource-grants`: implemented for `subjectId, roleKey, scopeType, scopeId, reason, idempotencyKey`; assigns only `pmo_admin|pmo|project_manager|contributor|executive|viewer` to another active member, at an active same-Tenant Portfolio or Project. The DB resolves the resource, requires active Tenant-scoped `membership.grant` with deny precedence, rejects self-assignment and tenant-admin grants at resource scope, checks role compatibility against the versioned scope catalog, and commits grant + audit atomically. `membership.grant` is present only in Tenant Admin and PMO Admin presets. Workspace exposes the assignment form; resource CRUD remains pending.
+- `POST /api/v1/tenants/{tenantId}/resource-grants`: implemented for `subjectId, roleKey, scopeType, scopeId, reason, idempotencyKey`; assigns only `pmo_admin|pmo|project_manager|contributor|executive|viewer` to another active member, at an active same-Tenant Portfolio or Project. The DB resolves the resource, requires active Tenant-scoped `membership.grant` with deny precedence, rejects self-assignment and tenant-admin grants at resource scope, checks role compatibility against the versioned scope catalog, and commits grant + audit atomically. `membership.grant` is present only in Tenant Admin and PMO Admin presets. Workspace exposes assignment; Portfolio/Project CRUD exists as a Phase 2 product slice and is outside the Phase 1 completion gate.
 - `GET /api/v1/tenants/{tenantId}/resource-grant-targets`: returns only active same-Tenant Portfolio/Project IDs and labels to a caller with active `membership.grant` and no active deny; the workspace form uses this minimal list.
 - `POST /api/v1/access-grants/{id}/revoke`: revoke grant; idempotent; invalidate applicable authorization caches.
 - `GET /api/v1/roles`: list available system role templates for current Tenant; no arbitrary role/permission creation in MVP.

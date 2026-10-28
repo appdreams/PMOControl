@@ -1,6 +1,6 @@
 # SPEC-027 — Audit Log — Acceptance Criteria
 
-**Status:** Draft — critérios domain-specific; thresholds de contrato pendentes
+**Status:** MVP domain-audit criteria implemented in DEV; query/export UI is outside current gate
 
 ## AC-027-01 — consulta autorizada
 

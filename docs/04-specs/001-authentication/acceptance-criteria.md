@@ -1,6 +1,6 @@
 # SPEC-001 — Authentication — Acceptance Criteria
 
-**Status:** Draft — requisitos MVP alinhados; provider/security review pendente
+**Status:** MVP criteria implemented for DEV; release-specific production settings excluded
 
 ## AC-001-01 — login MVP
 

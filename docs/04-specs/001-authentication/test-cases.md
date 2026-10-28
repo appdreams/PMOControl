@@ -1,6 +1,6 @@
 # SPEC-001 — Authentication — Test Cases
 
-**Status:** Draft — matriz MVP; thresholds/security review pendentes
+**Status:** MVP regression matrix; production rate quotas and absolute session limits remain deployment checks
 
 - **TC-001-01:** Login válido com e-mail/senha cria sessão e resolve memberships.
 - **TC-001-02:** Credencial inválida, conta desativada e e-mail inexistente não permitem sessão e não expõem informação enumerável.
@@ -16,5 +16,6 @@
 - **TC-001-12:** Cookies SSR são host-only, `Path=/`, `SameSite=Lax`, `Secure` em HTTPS, sem `HttpOnly`/expiração curta customizada; refresh não é servido por cache compartilhado.
 - **TC-001-13:** Método inseguro com cookie e Origin divergente/ausente é rejeitado; falha pré-auth não cria evento de aplicação nem persiste email/IP não verificados.
 - **TC-001-14:** Auth identities sem metadado de nome recebem rótulo provisório e `profile_complete=false`; `GET/PATCH /api/v1/me/profile` retorna/atualiza apenas o perfil do ator; nome inválido, payload extra e Origin divergente são rejeitados.
+- **TC-001-15:** Sessão inválida/expirada ao abrir o workspace retorna à tela de login com mensagem neutra pedindo nova autenticação; query params não reconhecidos não alteram o aviso.
 
 Gates: sessão inválida, escalada de privilégio, enumeração e acesso sem membership bloqueiam release.

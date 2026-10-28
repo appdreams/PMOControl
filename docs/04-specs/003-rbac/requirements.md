@@ -1,6 +1,6 @@
 # SPEC-003 — RBAC & Contextual Authorization — Requirements
 
-**Status:** Draft — policy contract defined; matrix/business validation pending
+**Status:** MVP policy contract and exact-scope checks implemented in DEV; broader permission query surfaces remain future scope
 
 ## Evaluation
 

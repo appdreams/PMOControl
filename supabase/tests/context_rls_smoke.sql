@@ -41,10 +41,15 @@ SELECT CASE
    AND NOT has_table_privilege('authenticated', 'public.tenants', 'INSERT')
    AND NOT has_table_privilege('authenticated', 'public.tenants', 'UPDATE')
    AND NOT has_table_privilege('authenticated', 'public.tenants', 'DELETE')
+   AND NOT has_table_privilege('authenticated', 'public.audit_events', 'SELECT')
+   AND NOT has_table_privilege('authenticated', 'public.audit_events', 'INSERT')
+   AND NOT has_table_privilege('authenticated', 'public.audit_events', 'UPDATE')
+   AND NOT has_table_privilege('authenticated', 'public.audit_events', 'DELETE')
+   AND (SELECT relrowsecurity FROM pg_catalog.pg_class WHERE oid = 'public.audit_events'::regclass)
   THEN 1 ELSE 0 END AS grants_ok \gset
 \if :grants_ok
 \else
-  \echo 'Unexpected table privileges for authenticated.'
+  \echo 'Unexpected table privileges or audit immutability boundary for authenticated.'
   \quit 1
 \endif
 

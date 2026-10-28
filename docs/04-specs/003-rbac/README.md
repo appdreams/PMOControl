@@ -1,6 +1,6 @@
 # SPEC-003 --- RBAC & Contextual Authorization --- Readme
 
-**Status:** In progress — versioned permission catalog and scoped authorization foundation implemented; full negative route/entity matrix and domain review remain pending.\
+**Status:** In progress — versioned permission catalog, Tenant/resource delegation, lifecycle and exact-scope authorization implemented in DEV; remaining query surfaces and broader domain features are outside the Phase 1 gate.\
 **Spec:** 003\
 **Módulo:** RBAC & Contextual Authorization\
 **Arquivo:** `README.md`

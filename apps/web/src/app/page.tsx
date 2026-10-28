@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { LoginForm } from "./LoginForm";
 import { createSupabaseServerClient } from "@/server/infrastructure/supabase/server";
 import { getSupabasePublicConfig } from "@/server/infrastructure/supabase/config";
+import { getAuthNotice } from "@/modules/identity/application/auth-notice";
 
 const benefits = [
   { icon: "bars", title: "Visão completa", description: "De projetos e portfólio", tone: "blue" },
@@ -30,7 +31,10 @@ function Icon({ name }: { name: string }) {
 
 async function HomeContent({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
   const params = await searchParams;
-  const passwordUpdated = params.passwordUpdated === "1";
+  const authNotice = getAuthNotice({
+    session: typeof params.session === "string" ? params.session : undefined,
+    passwordUpdated: typeof params.passwordUpdated === "string" ? params.passwordUpdated : undefined,
+  });
   const requestedNext = typeof params.next === "string" ? params.next : "";
   let redirectTo = "/workspace";
   try {
@@ -87,7 +91,7 @@ async function HomeContent({ searchParams }: { searchParams: PageProps<"/">["sea
 
         <section className="login-panel" aria-labelledby="login-title">
           <div className="panel-heading"><h2 id="login-title">Acesse o<br /><span>PMO Control</span></h2><p>Entre na sua conta para gerenciar seus projetos, portfólio, insights e muito mais.</p></div>
-          <LoginForm configured={configured} initialNotice={passwordUpdated ? "Senha atualizada. Entre com sua nova senha." : ""} redirectTo={redirectTo} />
+          <LoginForm configured={configured} initialNotice={authNotice} redirectTo={redirectTo} />
           <div className="invite-note"><span>Não tem uma conta?</span> <a href="mailto:suporte@pmocontrol.com.br">Solicitar acesso</a></div>
         </section>
       </div>

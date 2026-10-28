@@ -1,6 +1,6 @@
 # SPEC-002 — Multi-Tenancy — Database
 
-**Status:** Draft — logical lifecycle schema
+**Status:** MVP Tenant, membership, invitation and export schema applied in DEV; extended product tables remain separately scoped
 
 Tables: `tenants(id,slug,display_name,status,version,created_at,created_by,suspended_at,termination_started_at)` with status `active|suspended|termination_pending|export_ready|purging|terminated`; `memberships(id,tenant_id,user_id,status,created_at,activated_at,revoked_at,version)` with status `active|suspended|revoked`, unique `(tenant_id,user_id)`; `tenant_invitations(id,tenant_id,invitation_kind,email_normalized,grant_payload,token_hash,expires_at,accepted_at,revoked_at,created_by)` where `invitation_kind` is `first_admin|tenant_member`; export records are `tenant_exports`, `tenant_export_disputes` and `tenant_export_holds` (defined below); `tenant_quotas(tenant_id,plan_key,limit_key,limit_value,effective_at,updated_by)`.
 

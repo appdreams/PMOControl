@@ -1,6 +1,6 @@
 # SPEC-001 — Authentication — Requirements
 
-**Status:** Draft — contrato inicial, depende de validação do produto
+**Status:** MVP implemented in DEV — provider policy and production session guarantees remain separately scoped
 **Spec:** 001  
 **Módulo:** Authentication
 
@@ -44,14 +44,16 @@ nenhum Tenant, Portfolio ou Project.
 ## Requisitos não funcionais
 
 - Validar tokens e sessão no servidor em cada limite de confiança.
-- Aplicar rate limiting e proteção contra enumeração em login e
-  recuperação.
+- Usar os controles de rate limit gerenciados pelo Supabase Auth nos
+  endpoints de credencial e recovery e manter resposta neutra contra
+  enumeração. Não alegar limite adicional da aplicação; revisar quotas
+  configuráveis antes do tráfego de produção.
 - Cookies de sessão devem usar atributos seguros definidos pela
   arquitetura de deployment; tokens não devem ser persistidos em
   `localStorage`.
 - Erros e logs nunca incluem credenciais ou tokens completos.
 
-Eventos de login/logout, cadastro, recuperação e ciclo de tokens são mantidos nos Auth Audit Logs do Supabase; não são copiados para `public.audit_events`, evitando duplicação e preservando a divisão entre auditoria de identidade do provedor e eventos de domínio da aplicação. O schema Auth não expõe acesso direto ao cliente.
+Eventos de login/logout, cadastro, recuperação e ciclo de tokens são mantidos nos Auth Audit Logs do Supabase; não são copiados para `public.audit_events`, evitando duplicação e preservando a divisão entre auditoria de identidade do provedor e eventos de domínio da aplicação. O schema Auth não expõe acesso direto ao cliente. A aplicação trata erros de login com mensagem genérica e, após sessão inválida/expirada no workspace, redireciona para login com aviso neutro.
 
 ## Fora de escopo / decisões pendentes
 

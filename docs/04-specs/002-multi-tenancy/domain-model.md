@@ -1,6 +1,6 @@
 # SPEC-002 — Multi-Tenancy — Domain Model
 
-**Status:** Draft — decisões MVP incorporadas; schema detalhado pendente
+**Status:** MVP Tenant, Membership, Invitation and export lifecycle modeled and applied in DEV
 
 ## Entidades
 

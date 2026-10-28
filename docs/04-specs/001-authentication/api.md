@@ -1,6 +1,6 @@
 # SPEC-001 — Authentication — API
 
-**Status:** Draft — implementação parcial; validação integrada pendente
+**Status:** MVP login/recovery/session/profile routes implemented and exercised in DEV; deployment-specific quotas remain separate
 
 ## Provider e limites
 
@@ -32,4 +32,4 @@ Aplicar rate limit a login/recovery; validar e-mail e payload server-side; não 
 
 ## Pendências técnicas
 
-Rate-limit adicional da aplicação, SMTP customizado por ambiente, validação integrada com credenciais reais e gate de idade de sessão para produção permanecem pendentes. A allowlist DEV inclui `http://localhost:3000/auth/callback`; não alterar o escopo MVP confirmado (email/senha apenas).
+Login/recovery use Supabase Auth provider-managed rate limits and generic credential/recovery messaging. No additional app-level throttle is claimed. SMTP customizado e limites numéricos por ambiente são deployment checks; sessão absoluta/inatividade são gates de produção. A allowlist DEV inclui `http://localhost:3000/auth/callback`; não alterar o escopo MVP confirmado (email/senha apenas).

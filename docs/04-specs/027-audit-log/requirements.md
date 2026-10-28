@@ -1,6 +1,6 @@
 # SPEC-027 — Audit Log — Requirements
 
-**Status:** Draft — domínio especificado; revisão de contrato transversal pendente  
+**Status:** MVP audit boundary implemented in DEV; broader audit query/export remains future scope
 **Spec:** 027
 
 ## Objetivo e regra de domínio
@@ -12,6 +12,7 @@ Eventos append-only para usuários comuns; payload minimizado, sem secrets, com 
 - Evento de aplicação exige ator autenticado/verificado. `actor_id` é obrigatório e `actor_type` é allowlist (`user`, `platform_service`, `system_job`), derivado do contexto de execução confiável. `user` usa `auth.uid()`; serviços/jobs usam IDs estáveis de um catálogo versionado pela aplicação, validados por par ID/tipo no writer. Ator anônimo ou email informado não pode ser usado para atribuir evento.
 - Tentativas de login falhas pré-autenticação permanecem no log do provider. Não copiar email, IP ou credencial para `audit_events`.
 - Login/logout, cadastro, recovery, alteração de senha e ciclo de tokens são auditados nos Auth Audit Logs do Supabase. `audit_events` permanece reservado a eventos de domínio autenticados; não espelhar esses eventos do provider.
+- `public.audit_events` applies `audit_events_redacted_payload_check`: nested keys naming passwords, tokens, secrets, cookies, authorization or credentials are rejected; credential assignments, bearer tokens and JWT-shaped values are rejected in reason and redacted payloads. The check runs within the transaction, so the domain command is rolled back if its event is unsafe.
 - `event_type`, `source`, `reason_code` e chaves do payload usam allowlist por comando. Valores livres não podem conter password, token, cookie, authorization header, segredo BYOK ou conteúdo de formulário. Guardar IDs internos e códigos enumerados, nunca snapshot de credenciais.
 - Evento de plataforma pode ter `tenant_id = NULL` somente para ação genuinamente platform-scoped; idempotency key continua única nesse escopo.
 

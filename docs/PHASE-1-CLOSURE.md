@@ -16,9 +16,9 @@
 | Gate | Condição objetiva | Situação |
 |---|---|---|
 | C1 — Identity/Tenant/RBAC | Schema, isolamento, grants, convites e lifecycle cobertos por migrations e smokes DEV; sem finding de FK sem índice neste schema. | Concluído — migration `20261028012242` aplicada; advisor sem FK sem índice; CI `40616066451` passou com paridade das 36 migrations e smokes. |
-| C2 — Auth/onboarding | Fluxos descritos no escopo implementados; estados de sessão e abuso cobertos; perfil self-service funcional. | Em andamento |
-| C3 — Audit | Operações sensíveis e alterações de credenciais auditáveis, com scrub verificado por testes. | Em andamento |
-| C4 — Tenant export/retention | Exportação privada verificável, notificação/download do contato, disputa, hold e purge retomável implementados e testados com fixtures; nenhum dado real precisa ser apagado para validar. | Em andamento — disputa, hold e purge implementados; smoke transacional DEV passou após correção da ordem da FK; Edge Function `tenant-export` versão 2 implantada com Storage API. Aguardando CI e registro final de evidências. |
+| C2 — Auth/onboarding | Fluxos descritos no escopo implementados; estados de sessão e abuso cobertos; perfil self-service funcional. | Em andamento — sessão inválida/expirada agora retorna mensagem de reautenticação testada; login/recovery neutros e Auth provider limits cobertos. Aguardar CI verde atualizado. |
+| C3 — Audit | Operações sensíveis e alterações de credenciais auditáveis, com scrub verificado por testes. | Em andamento — logs Auth do provider agregados sem PII; constraint recursivo de payload/reason e rejeição sem escrita parcial testados no DEV. Aguardar CI verde atualizado. |
+| C4 — Tenant export/retention | Exportação privada verificável, notificação/download do contato, disputa, hold e purge retomável implementados e testados com fixtures; nenhum dado real precisa ser apagado para validar. | Concluído — smoke transacional DEV passou com rollback; Edge Function `tenant-export` v2 implantada com Storage API; CI `40619429844` passou nos jobs de lint/test/types/build e smokes Supabase, com paridade das 40 migrations. Nenhum dado real foi purgado. |
 | C5 — Verificação/docs | Matriz negativa, CI verde e Specs 001/002/003/027 revisadas; este arquivo, `IMPLEMENTATION-PLAN.md` e `MVP-CHECKLIST.md` concordam. | Em andamento |
 
 ## Fora do bloqueio da Fase 1
@@ -30,8 +30,7 @@
 
 ## Próxima sequência fixa
 
-1. C4: validar no CI a disputa, hold e purge seguro/retomável já implementados; fechar o gate com evidências.
-2. C2/C3: concluir estados e limites de autenticação, perfil e auditoria/scrub.
-3. C5: fechar a matriz negativa, revisar as quatro Specs e validar CI/documentos.
+1. C2/C3: concluir estados e limites de autenticação, perfil e auditoria/scrub.
+2. C5: fechar a matriz negativa, revisar as quatro Specs e validar CI/documentos.
 
 Não adicionar novo item de fechamento sem registrar primeiro a mudança de escopo aqui.

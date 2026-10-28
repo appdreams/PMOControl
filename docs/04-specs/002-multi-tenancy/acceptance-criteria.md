@@ -1,6 +1,6 @@
 # SPEC-002 — Multi-Tenancy — Acceptance Criteria
 
-**Status:** Draft — decisões MVP alinhadas; fluxo de export/purge operacional pendente
+**Status:** MVP lifecycle and export/retention criteria implemented in DEV; production infrastructure retention excluded
 
 ## AC-002-01 — provisionamento controlado
 

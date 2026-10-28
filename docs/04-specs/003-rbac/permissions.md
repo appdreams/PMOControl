@@ -1,6 +1,6 @@
 # SPEC-003 — RBAC & Contextual Authorization — Permission Matrix
 
-**Status:** Draft — recommended MVP defaults; customer role grants remain configurable only by platform policy
+**Status:** MVP permission presets and exact-scope delegation applied in DEV; changes require reviewed catalog versioning
 
 | Role | Default scope | Allowed capabilities | Explicitly excluded by default |
 |---|---|---|---|

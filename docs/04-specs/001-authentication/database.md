@@ -1,6 +1,6 @@
 # SPEC-001 — Authentication — Database
 
-**Status:** Draft — provider schema/config review pending
+**Status:** MVP provider boundary documented; credentials and sessions remain owned by Supabase Auth
 
 Supabase Auth owns credentials, provider identities and session tokens; application MUST NOT duplicate password hashes, access/refresh/recovery tokens or invitation tokens in domain tables/logs.
 

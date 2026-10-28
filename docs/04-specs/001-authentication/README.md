@@ -1,6 +1,6 @@
 # SPEC-001 --- Authentication --- Readme
 
-**Status:** In progress — authentication and session foundation implemented; provider/security review and complete session-state validation remain pending.\
+**Status:** In progress — MVP login, recovery, callback, logout, SSR refresh, self-service profile and invalid/expired session messaging implemented; production session-age/provider settings remain outside the Phase 1 gate.\
 **Spec:** 001\
 **Módulo:** Authentication\
 **Arquivo:** `README.md`
