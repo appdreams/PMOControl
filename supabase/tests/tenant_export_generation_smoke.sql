@@ -166,6 +166,32 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM storage.objects WHERE bucket_id = 'tenant-exports' AND name = v_object_path) THEN
     RAISE EXCEPTION 'Authorized contact cannot read the finalized export';
   END IF;
+  PERFORM set_config('request.jwt.claim.sub', v_other::TEXT, TRUE);
+  BEGIN
+    PERFORM public.get_my_tenant_export(v_export);
+    RAISE EXCEPTION 'Unrelated user obtained Tenant export metadata';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+  PERFORM set_config('request.jwt.claim.sub', v_contact::TEXT, TRUE);
+  v_bundle_response := public.get_my_tenant_export(v_export);
+  IF v_bundle_response->>'artifactPath' <> v_object_path
+     OR v_bundle_response->>'artifactSha256' <> repeat('ef', 32)
+     OR (v_bundle_response->>'artifactBytes')::BIGINT <> 8 THEN
+    RAISE EXCEPTION 'Authorized export metadata is incomplete or incorrect';
+  END IF;
+  v_final := public.record_my_tenant_export_download(v_export);
+  IF v_final->>'idempotentReplay' <> 'false' OR v_final->>'firstDownloadedAt' IS NULL THEN
+    RAISE EXCEPTION 'First export download was not recorded';
+  END IF;
+  v_final := public.record_my_tenant_export_download(v_export);
+  IF v_final->>'idempotentReplay' <> 'true' THEN RAISE EXCEPTION 'Download audit replay failed'; END IF;
+  EXECUTE 'RESET ROLE';
+  SELECT count(*) INTO v_audit_count FROM public.audit_events AS a
+    WHERE a.tenant_id IS NULL AND a.source = 'tenant-export-download'
+      AND a.idempotency_key = v_export::TEXT;
+  IF v_audit_count <> 1 OR NOT EXISTS (
+    SELECT 1 FROM public.tenant_exports AS e WHERE e.id = v_export AND e.first_downloaded_at IS NOT NULL
+  ) THEN RAISE EXCEPTION 'First export download was not audited exactly once'; END IF;
 END;
 $smoke$;
 ROLLBACK;
