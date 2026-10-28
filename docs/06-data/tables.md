@@ -1,6 +1,6 @@
 # Canonical Tables
 
-**Status:** Draft — 62 named canonical tables; module/migration reconciliation pending
+**Status:** Draft — 63 named canonical tables; module/migration reconciliation pending
 
 This document is the canonical MVP table inventory. Exact SQL types may
 be refined by migrations without changing domain semantics.
@@ -13,6 +13,7 @@ be refined by migrations without changing domain semantics.
 Tenant                  `tenant_invitations`        Single-use 7-day membership invites
 Tenant                  `tenant_exports`            Export-first termination artifacts/status
 Tenant                  `tenant_export_disputes`    Scoped, auditable completeness disputes before purge
+Tenant                  `tenant_export_holds`       Scoped, auditable legal holds for export retention
 Tenant                  `tenant_quotas`             Optional plan-scoped limits
 Access                  `user_profiles`             Non-credential profile metadata
 
