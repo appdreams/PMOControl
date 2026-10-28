@@ -91,6 +91,13 @@ button, input { font: inherit; }
 .tenant-export-notifications > p, .tenant-export-notice p { margin: 5px 0; color: #c6d5e8; font-size: 13px; line-height: 1.5; }
 .tenant-export-notice { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin-top: 12px; padding: 14px 0 0; border-top: 1px solid #155579; }
 .tenant-export-notice h3 { margin: 0; font-size: 15px; }
+.tenant-export-dispute { flex-basis: 100%; border-top: 1px solid #155579; padding-top: 10px; }
+.tenant-export-dispute summary { color: #18d0ec; cursor: pointer; }
+.tenant-export-dispute form { display: grid; gap: 10px; margin-top: 12px; }
+.tenant-export-dispute form > label { display: grid; gap: 6px; }
+.tenant-export-dispute textarea { min-height: 80px; resize: vertical; }
+.tenant-export-dispute fieldset { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.tenant-export-dispute fieldset label { display: inline-flex; align-items: center; gap: 5px; }
 .workspace-nav { display: flex; flex-wrap: wrap; gap: 9px; margin: 22px 0 8px; }
 .workspace-nav a { min-height: 40px; display: inline-flex; align-items: center; padding: 8px 13px; border: 1px solid #155579; border-radius: 999px; background: #06182b; color: #bfefff; font-size: 13px; }
 .workspace-nav a:hover, .workspace-nav a:focus-visible { border-color: #08c9f1; background: #09243b; color: #fff; outline: 2px solid #08c9f180; outline-offset: 2px; }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Feedback } from "@/components/ui/Feedback";
 
@@ -16,6 +16,13 @@ type ExportNotice = {
   notifiedAt: string;
 };
 
+const exportDatasets = [
+  ["tenant", "Organização"], ["userProfiles", "Perfis"], ["memberships", "Membros"],
+  ["invitations", "Convites"], ["roles", "Papéis"], ["rolePermissions", "Permissões"],
+  ["accessGrants", "Acessos"], ["portfolios", "Portfólios"], ["projects", "Projetos"],
+  ["portfolioProjects", "Associações"], ["auditEvents", "Auditoria"],
+] as const;
+
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(value));
 }
@@ -25,6 +32,8 @@ export function TenantExportNotifications() {
   const [error, setError] = useState("");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [downloadError, setDownloadError] = useState("");
+  const [disputePendingId, setDisputePendingId] = useState<string | null>(null);
+  const [disputeMessage, setDisputeMessage] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -74,6 +83,37 @@ export function TenantExportNotifications() {
     } finally { setPendingId(null); }
   }
 
+  async function fileDispute(exportItem: ExportNotice, event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setDisputePendingId(exportItem.exportId);
+    setDisputeMessage("");
+    const form = event.currentTarget;
+    const values = new FormData(form);
+    const reason = values.get("reason");
+    const selected = values.getAll("datasets");
+    if (typeof reason !== "string" || selected.length === 0 || !selected.every((value) => typeof value === "string")) {
+      setDisputeMessage("Informe o motivo e ao menos um conjunto de dados.");
+      setDisputePendingId(null);
+      return;
+    }
+    try {
+      const response = await fetch(`/api/v1/tenant-exports/${encodeURIComponent(exportItem.exportId)}/disputes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason, datasets: selected, idempotencyKey: crypto.randomUUID() }),
+        cache: "no-store",
+      });
+      const result = await response.json() as { error?: { message?: string }; dispute?: { disputeId?: string } };
+      if (!response.ok || typeof result.dispute?.disputeId !== "string") {
+        throw new Error(result.error?.message ?? "Não foi possível registrar a contestação.");
+      }
+      form.reset();
+      setDisputeMessage("Contestação registrada. A equipe responsável analisará o caso antes do purge.");
+    } catch (reason) {
+      setDisputeMessage(reason instanceof Error ? reason.message : "Não foi possível registrar a contestação.");
+    } finally { setDisputePendingId(null); }
+  }
+
   if (exports === null && !error) return null;
   if (exports?.length === 0 && !error) return null;
   return <section className="tenant-export-notifications" aria-labelledby="tenant-export-notifications-title" aria-live="polite">
@@ -90,6 +130,22 @@ export function TenantExportNotifications() {
       <Button type="button" disabled={pendingId !== null} onClick={() => void download(item)}>
         {pendingId === item.exportId ? "Validando arquivo…" : "Baixar export"}
       </Button>
+      <details className="tenant-export-dispute">
+        <summary>Contestar dados da exportação</summary>
+        <form onSubmit={(event) => void fileDispute(item, event)}>
+          <label>Motivo<textarea name="reason" required minLength={1} maxLength={1000} /></label>
+          <fieldset>
+            <legend>Quais conjuntos estão incompletos?</legend>
+            {exportDatasets.map(([key, label]) => <label key={key}>
+              <input type="checkbox" name="datasets" value={key} /> {label}
+            </label>)}
+          </fieldset>
+          <Button type="submit" disabled={disputePendingId !== null}>
+            {disputePendingId === item.exportId ? "Enviando…" : "Enviar contestação"}
+          </Button>
+        </form>
+        {disputeMessage && <Feedback tone={disputeMessage.startsWith("Contestação") ? "success" : "error"}>{disputeMessage}</Feedback>}
+      </details>
     </article>)}
   </section>;
 }

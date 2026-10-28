@@ -24,10 +24,15 @@ Deno.serve(async (request) => {
   try { body = await request.json(); } catch { return json({ error: "INVALID_REQUEST" }, 400); }
   if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "INVALID_REQUEST" }, 400);
   const input = body as Record<string, unknown>;
-  if (!isUuid(input.tenantId) || !Number.isSafeInteger(input.expectedTenantVersion) ||
-      (input.expectedTenantVersion as number) < 1 || !isUuid(input.contactUserId) ||
+  const purgeRequest = input.action === "purge";
+  if ((input.action !== undefined && !purgeRequest) || !isUuid(input.tenantId) ||
       !isUuid(input.idempotencyKey) || typeof input.reason !== "string" ||
-      input.reason !== input.reason.trim() || input.reason.length < 1 || input.reason.length > 1000) {
+      input.reason !== input.reason.trim() || input.reason.length < 1 || input.reason.length > 1000 ||
+      (purgeRequest
+        ? (!isUuid(input.exportId) || !Number.isSafeInteger(input.expectedTenantVersion) ||
+          (input.expectedTenantVersion as number) < 1)
+        : (!Number.isSafeInteger(input.expectedTenantVersion) ||
+          (input.expectedTenantVersion as number) < 1 || !isUuid(input.contactUserId)))) {
     return json({ error: "INVALID_REQUEST" }, 422);
   }
 
@@ -47,6 +52,60 @@ Deno.serve(async (request) => {
   try {
     const { data: userData, error: userError } = await userClient.auth.getUser();
     if (userError || !userData.user) return json({ error: "UNAUTHENTICATED" }, 401);
+
+    if (purgeRequest) {
+      const tenantId = input.tenantId as string;
+      const exportId = input.exportId as string;
+      const { data: started, error: startError } = await userClient.rpc("begin_tenant_export_purge", {
+        p_tenant_id: tenantId,
+        p_export_id: exportId,
+        p_expected_tenant_version: input.expectedTenantVersion,
+        p_reason: input.reason,
+        p_idempotency_key: input.idempotencyKey,
+      });
+      if (startError) {
+        if (startError.code === "42501") return json({ error: "FORBIDDEN" }, 403);
+        if (startError.code === "40001") return json({ error: "VERSION_CONFLICT" }, 409);
+        if (startError.code === "23505") return json({ error: "CONFLICT" }, 409);
+        if (startError.code === "22023") return json({ error: "PURGE_BLOCKED" }, 422);
+        return json({ error: "PURGE_UNAVAILABLE" }, 503);
+      }
+      if (!started || typeof started !== "object" || (started as JsonObject).tenantId !== tenantId ||
+          (started as JsonObject).exportId !== exportId) return json({ error: "PURGE_UNAVAILABLE" }, 503);
+
+      let progress = started as JsonObject;
+      for (let step = 0; step < 12 && progress.status === "in_progress"; step += 1) {
+        const { data: advanced, error: advanceError } = await userClient.rpc("advance_tenant_export_purge", {
+          p_tenant_id: tenantId,
+          p_batch_size: 500,
+        });
+        if (advanceError || !advanced || typeof advanced !== "object") return json({ error: "PURGE_UNAVAILABLE" }, 503);
+        progress = advanced as JsonObject;
+        if (progress.status === "blocked" || progress.status === "completed") break;
+        if (progress.needsArtifactRemoval === true) {
+          const { data: artifact, error: artifactError } = await userClient.rpc("get_tenant_export_purge_artifact", {
+            p_tenant_id: tenantId,
+          });
+          if (artifactError || !artifact || typeof artifact !== "object") return json({ error: "PURGE_UNAVAILABLE" }, 503);
+          const object = artifact as JsonObject;
+          const expectedPath = `${tenantId}/${exportId}.json`;
+          if (object.tenantId !== tenantId || object.exportId !== exportId ||
+              object.artifactBucket !== "tenant-exports" || object.artifactPath !== expectedPath) {
+            return json({ error: "PURGE_UNAVAILABLE" }, 503);
+          }
+          const { error: removeError } = await adminClient.storage.from("tenant-exports").remove([expectedPath]);
+          if (removeError) return json({ error: "PURGE_UNAVAILABLE" }, 503);
+          const { data: confirmed, error: confirmError } = await adminClient.rpc("confirm_tenant_export_artifact_purged", {
+            p_actor_id: userData.user.id,
+            p_tenant_id: tenantId,
+            p_export_id: exportId,
+          });
+          if (confirmError || !confirmed || typeof confirmed !== "object") return json({ error: "PURGE_UNAVAILABLE" }, 503);
+          progress = confirmed as JsonObject;
+        }
+      }
+      return json({ purge: progress });
+    }
 
     const { data: reservation, error: reservationError } = await userClient.rpc("request_tenant_export", {
       p_tenant_id: input.tenantId,
